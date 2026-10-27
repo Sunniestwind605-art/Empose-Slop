@@ -1,3 +1,6 @@
+export { default } from './PoseViewer2D';
+
+/* Legacy 3D implementation retained below for pose-data migration reference.
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Line, OrbitControls, RoundedBox } from '@react-three/drei';
 import { Pause, Play, RefreshCcw, Rotate3d, ScanLine, SkipBack, SkipForward, ZoomIn, ZoomOut } from 'lucide-react';
@@ -254,4 +257,5 @@ function PhotographerGuide({ guide }: { guide: CameraGuide }) {
     </group>
   );
 }
+*/
 

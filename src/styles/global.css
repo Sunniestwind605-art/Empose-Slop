@@ -84,13 +84,32 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .stage-note { position: absolute; right: 18px; bottom: 84px; z-index: 3; display: flex; align-items: center; gap: 8px; max-width: 210px; padding: 10px 13px; border: 1px solid rgba(255,255,255,.4); border-radius: 12px; background: rgba(255,255,255,.7); backdrop-filter: blur(10px); font-size: .72rem; line-height: 1.35; }
 
 .pose-viewer-shell { position: relative; background: #e9e4da; }
-.viewer-canvas { position: relative; height: 560px; background: #e9e4da; }
-.viewer-canvas canvas { touch-action: none; }
-.viewer-badge { position: absolute; right: 14px; top: 14px; padding: 7px 10px; border-radius: 8px; background: rgba(251,248,242,.76); backdrop-filter: blur(10px); color: #60615c; font-size: .66rem; font-weight: 700; text-transform: capitalize; }
-.viewer-controls { display: flex; align-items: center; gap: 7px; min-height: 62px; padding: 10px 14px; border-top: 1px solid rgba(32,33,31,.12); background: var(--paper); }
-.control-separator { width: 1px; height: 26px; margin: 0 4px; background: var(--line); }
+.viewer-canvas { position: relative; height: 560px; overflow: hidden; background: #e9e4da; }
+.pose-diagram { width: 100%; height: 100%; }
+.viewer-canvas .pose-diagram { transition: opacity .2s ease; }
+.viewer-badge { position: absolute; right: 14px; top: 14px; padding: 7px 10px; border: 1px solid rgba(32,33,31,.08); border-radius: 999px; background: rgba(251,248,242,.88); backdrop-filter: blur(10px); color: #50534c; font-size: .64rem; font-weight: 800; text-transform: capitalize; }
+.diagram-legend { position: absolute; left: 18px; bottom: 16px; display: flex; gap: 12px; padding: 8px 10px; border: 1px solid rgba(32,33,31,.1); border-radius: 10px; background: rgba(251,248,242,.84); backdrop-filter: blur(10px); color: #585b55; font-size: .61rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+.diagram-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.diagram-legend i { width: 8px; height: 8px; border: 1px solid var(--ink); border-radius: 50%; }
+.legend-joint { background: var(--lime); }
+.legend-gaze { background: #7fa13e; }
+.legend-weight { background: var(--coral); }
+.viewer-controls { display: flex; align-items: center; gap: 8px; min-height: 64px; padding: 10px 14px; border-top: 1px solid rgba(32,33,31,.12); background: var(--paper); }
+.view-tabs { display: inline-flex; padding: 3px; border: 1px solid var(--line); border-radius: 999px; background: #ece6db; }
+.view-tabs button { min-width: 54px; height: 34px; padding: 0 12px; border: 0; border-radius: 999px; background: transparent; color: #64665f; font-size: .7rem; font-weight: 850; cursor: pointer; }
+.view-tabs button.active { background: var(--ink); color: white; }
+.detail-toggle { display: inline-flex; align-items: center; gap: 6px; min-height: 38px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: transparent; font-size: .7rem; font-weight: 850; cursor: pointer; }
+.detail-toggle.active { background: var(--lime); border-color: var(--ink); }
+.control-separator { width: 1px; height: 26px; margin: 0 3px; background: var(--line); }
+.palette-label { color: var(--muted); font-size: .64rem; font-weight: 850; text-transform: uppercase; letter-spacing: .08em; }
 .material-swatch { width: 24px; height: 24px; border: 3px solid white; border-radius: 50%; box-shadow: 0 0 0 1px var(--line); cursor: pointer; }
 .material-swatch.active { box-shadow: 0 0 0 2px var(--ink); }
+.visual-cue-rail { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); background: var(--paper); }
+.visual-cue-rail article { display: grid; grid-template-columns: auto 1fr; gap: 10px; min-height: 116px; padding: 17px 15px; border-right: 1px solid var(--line); }
+.visual-cue-rail article:last-child { border-right: 0; }
+.visual-cue-rail svg { margin-top: 2px; color: var(--coral); }
+.visual-cue-rail span { display: block; margin-bottom: 7px; color: var(--muted); font-size: .61rem; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; }
+.visual-cue-rail p { margin: 0; font-size: .7rem; line-height: 1.45; }
 .animation-panel { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 14px; padding: 14px 16px 17px; border-top: 1px solid var(--line); background: #272a27; color: white; }
 .animation-controls { display: flex; align-items: center; gap: 6px; }
 .animation-controls .icon-button { width: 34px; height: 34px; color: white; background: transparent; border-color: rgba(255,255,255,.22); }
@@ -100,9 +119,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .stage-copy strong { font-size: .78rem; }
 .stage-copy p { grid-column: 1 / -1; margin: 0; color: #d4d6cf; font-size: .7rem; }
 .animation-panel small { grid-column: 1 / -1; color: #bfc1bb; }
-.viewer-fallback { min-height: 500px; display: grid; place-items: center; padding: 20px; background: #e9e4da; }
-.viewer-fallback .pose-glyph { max-width: 360px; }
-.viewer-fallback p { max-width: 360px; text-align: center; }
+.compact-diagram { aspect-ratio: 1.04 / 1; object-fit: cover; }
 
 .route-strip { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .route-strip a { position: relative; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 15px; min-height: 110px; padding: 18px 24px; border-right: 1px solid var(--line); transition: background .2s ease; }
@@ -365,6 +382,9 @@ select { min-height: 42px; padding: 0 34px 0 12px; border: 1px solid var(--line)
   .hero-stage .viewer-canvas { height: 470px; }
   .stage-note { bottom: 138px; }
   .viewer-controls { flex-wrap: wrap; }
+  .visual-cue-rail { grid-template-columns: 1fr; }
+  .visual-cue-rail article { min-height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+  .visual-cue-rail article:last-child { border-bottom: 0; }
   .animation-panel { grid-template-columns: 1fr; }
   .route-strip { grid-template-columns: 1fr 1fr; }
   .route-strip a { min-height: 94px; border-bottom: 1px solid var(--line); }

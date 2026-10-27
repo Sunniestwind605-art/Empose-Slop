@@ -1,11 +1,9 @@
-import { ArrowRight, Camera, LockKeyhole, Move3d, ScanFace, UsersRound } from 'lucide-react';
-import { lazy, Suspense } from 'react';
+import { ArrowRight, Camera, LockKeyhole, Move3d, ScanFace, ScanLine, UsersRound } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PoseCard } from '../components/PoseCard';
 import { poseById, poseStats, poses } from '../data/poses';
-import { PoseGlyph } from '../features/pose-viewer/PoseGlyph';
+import PoseViewer from '../features/pose-viewer/PoseViewer';
 
-const PoseViewer = lazy(() => import('../features/pose-viewer/PoseViewer'));
 const heroPose = poseById('fashion-counterline') ?? poses[0];
 const picks = ['wall-lean', 'connected-walk', 'mirror-outfit-offset'].map((id) => poseById(id)!).filter(Boolean);
 
@@ -16,7 +14,7 @@ export function HomePage() {
         <div className="hero-copy">
           <span className="kicker">Your browser-based pose director</span>
           <h1>Stop wondering<br /><em>what to do</em><br />in the frame.</h1>
-          <p>Describe the feeling, setting and shot. PosePilot builds a private shortlist, then shows every angle on an interactive 3D mannequin.</p>
+          <p>Describe the feeling, setting and shot. PosePilot builds a private shortlist, then draws every joint, angle and weight shift as a clear pose blueprint.</p>
           <div className="hero-actions">
             <Link className="button primary" to="/generate">Generate my poses <ArrowRight size={18} /></Link>
             <Link className="button secondary" to="/explore">Browse all {poseStats.total}</Link>
@@ -24,9 +22,9 @@ export function HomePage() {
           <div className="privacy-chip"><LockKeyhole size={15} /> No face scanning. No account. No uploads.</div>
         </div>
         <div className="hero-stage">
-          <div className="stage-label"><span>LIVE 3D</span><strong>{heroPose.title}</strong></div>
-          <Suspense fallback={<PoseGlyph pose={heroPose} />}><PoseViewer pose={heroPose} /></Suspense>
-          <div className="stage-note"><Move3d size={17} /><span>Drag to study the pose from every side.</span></div>
+          <div className="stage-label"><span>POSE BLUEPRINT</span><strong>{heroPose.title}</strong></div>
+          <PoseViewer pose={heroPose} showCueRail={false} />
+          <div className="stage-note"><ScanLine size={17} /><span>Switch views and follow the joint, gaze and weight markers.</span></div>
         </div>
       </section>
 
@@ -52,7 +50,7 @@ export function HomePage() {
         <div className="how-copy"><span className="kicker">From blank to frame-ready</span><h2>A clear direction in three beats.</h2></div>
         <ol>
           <li><span>01</span><Camera /><div><strong>Set the intention</strong><p>Choose who, where, mood and framing. No personal details required.</p></div></li>
-          <li><span>02</span><Move3d /><div><strong>Study the shape</strong><p>Rotate a real articulated mannequin and play each movement sequence.</p></div></li>
+          <li><span>02</span><ScanLine /><div><strong>Study the shape</strong><p>Read a detailed 2D blueprint with joint, gaze, hand and weight markers.</p></div></li>
           <li><span>03</span><ArrowRight /><div><strong>Make it yours</strong><p>Follow concise cues, save a shortlist and move through your shoot plan.</p></div></li>
         </ol>
       </section>

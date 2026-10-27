@@ -1,12 +1,10 @@
-import { ArrowLeft, BookmarkPlus, Camera, Check, Heart, Rotate3d, Sparkles } from 'lucide-react';
-import { lazy, Suspense, useMemo, useState } from 'react';
+import { ArrowLeft, BookmarkPlus, Camera, Check, Heart, Sparkles } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../AppContext';
 import { PoseCard } from '../components/PoseCard';
 import { poseById, poses } from '../data/poses';
-import { PoseGlyph } from '../features/pose-viewer/PoseGlyph';
-
-const PoseViewer = lazy(() => import('../features/pose-viewer/PoseViewer'));
+import PoseViewer from '../features/pose-viewer/PoseViewer';
 
 export function PoseDetailPage() {
   const { id } = useParams();
@@ -32,7 +30,7 @@ export function PoseDetailPage() {
 
       <section className="detail-main">
         <div className="detail-viewer">
-          <Suspense fallback={<PoseGlyph pose={pose} />}><PoseViewer pose={pose} showPhotographer={showPhotographer} /></Suspense>
+          <PoseViewer pose={pose} showPhotographer={showPhotographer} />
           {pose.cameraGuide && (
             <button className={`photographer-toggle ${showPhotographer ? 'active' : ''}`} onClick={() => setShowPhotographer((value) => !value)} aria-pressed={showPhotographer}><Camera size={18} /> {showPhotographer ? 'Hide' : 'Show'} photographer guide</button>
           )}
