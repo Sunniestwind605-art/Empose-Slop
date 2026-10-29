@@ -49,6 +49,7 @@ export type CameraGuide = {
 export type Pose = {
   id: string;
   title: string;
+  artwork?: string;
   category: 'standing' | 'seated' | 'portrait' | 'couple' | 'mirror' | 'selfie';
   description: string;
   subjects: PoseSubject[];

@@ -210,6 +210,20 @@ export function PoseDiagram({
   compact?: boolean;
 }) {
   const localId = useId().replaceAll(':', '');
+  if (pose.artwork) {
+    const artworkUrl = `${import.meta.env.BASE_URL}${pose.artwork.replace(/^\//, '')}`;
+    return (
+      <svg
+        className={`pose-diagram authored-pose-art ${compact ? 'pose-glyph compact-diagram' : ''}`}
+        viewBox="0 0 1254 1254"
+        role="img"
+        aria-label={`Authored articulated mannequin study of ${pose.title}`}
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <image href={artworkUrl} width="1254" height="1254" preserveAspectRatio="xMidYMid slice" />
+      </svg>
+    );
+  }
   const figures = [buildSkeleton(mannequinPose ?? pose.modelPose)];
   const activePartner = partnerPose ?? pose.partnerPose;
   if (activePartner) figures.push(buildSkeleton(activePartner));

@@ -66,7 +66,7 @@ export default function PoseViewer2D({
           showGuides={guides}
           showPhotographer={showPhotographer}
         />
-        <div className="viewer-badge">{view.replace('-', ' ')} view · sculpted articulated study</div>
+        <div className="viewer-badge">{pose.artwork ? 'authored reference · exact camera study' : `${view.replace('-', ' ')} view · sculpted articulated study`}</div>
         {guides && (
           <div className="diagram-legend" aria-hidden="true">
             <span><i className="legend-joint" /> pivot joints</span>
@@ -76,7 +76,7 @@ export default function PoseViewer2D({
         )}
       </div>
 
-      <div className="viewer-controls" aria-label="Pose illustration controls">
+      {!pose.artwork && <div className="viewer-controls" aria-label="Pose illustration controls">
         <div className="view-tabs" aria-label="Illustration angle">
           {viewLabels.map((item) => (
             <button
@@ -104,7 +104,7 @@ export default function PoseViewer2D({
             aria-pressed={palette === value}
           />
         ))}
-      </div>
+      </div>}
 
       {showCueRail && (
         <div className="visual-cue-rail" aria-label="Key visual pose cues">
