@@ -14,7 +14,7 @@ export function HomePage() {
         <div className="hero-copy">
           <span className="kicker">Your browser-based pose director</span>
           <h1>Stop wondering<br /><em>what to do</em><br />in the frame.</h1>
-          <p>Describe the feeling, setting and shot. PosePilot builds a private shortlist, then draws every joint, angle and weight shift as a clear pose blueprint.</p>
+          <p>Describe the feeling, setting and shot. PosePilot builds a private shortlist, then renders every joint, angle and weight shift on a sculpted articulated mannequin.</p>
           <div className="hero-actions">
             <Link className="button primary" to="/generate">Generate my poses <ArrowRight size={18} /></Link>
             <Link className="button secondary" to="/explore">Browse all {poseStats.total}</Link>
@@ -50,7 +50,7 @@ export function HomePage() {
         <div className="how-copy"><span className="kicker">From blank to frame-ready</span><h2>A clear direction in three beats.</h2></div>
         <ol>
           <li><span>01</span><Camera /><div><strong>Set the intention</strong><p>Choose who, where, mood and framing. No personal details required.</p></div></li>
-          <li><span>02</span><ScanLine /><div><strong>Study the shape</strong><p>Read a detailed 2D blueprint with joint, gaze, hand and weight markers.</p></div></li>
+          <li><span>02</span><ScanLine /><div><strong>Study the shape</strong><p>Read a smooth pseudo-3D mannequin with optional joint, head-direction, hand and balance markers.</p></div></li>
           <li><span>03</span><ArrowRight /><div><strong>Make it yours</strong><p>Follow concise cues, save a shortlist and move through your shoot plan.</p></div></li>
         </ol>
       </section>

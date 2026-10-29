@@ -2,7 +2,7 @@ import { useId } from 'react';
 import type { MannequinPose, Pose, Vec3 } from '../../types';
 
 export type DiagramView = 'front' | 'three-quarter' | 'side';
-export type DiagramPalette = 'coral' | 'ink' | 'lavender';
+export type DiagramPalette = 'pearl' | 'graphite' | 'cool-grey';
 
 type V3 = [number, number, number];
 type M3 = [number, number, number, number, number, number, number, number, number];
@@ -19,10 +19,19 @@ type ProjectedSkeleton = { points: Record<BodyPoint, Point2>; headFrame: Frame }
 
 const identity: M3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
 
-const palettes: Record<DiagramPalette, { top: string; bottom: string; skin: string; accent: string }> = {
-  coral: { top: '#ff654f', bottom: '#374852', skin: '#c98262', accent: '#c9ff64' },
-  ink: { top: '#343834', bottom: '#1d211e', skin: '#8d5b46', accent: '#c9ff64' },
-  lavender: { top: '#7774ad', bottom: '#3f416f', skin: '#e0ad87', accent: '#ffbcad' },
+type MaterialPalette = {
+  light: string;
+  mid: string;
+  shadow: string;
+  deep: string;
+  edge: string;
+  accent: string;
+};
+
+const palettes: Record<DiagramPalette, MaterialPalette> = {
+  pearl: { light: '#f4f5f5', mid: '#bfc3c4', shadow: '#8c9193', deep: '#5f6568', edge: '#4f5558', accent: '#ff654f' },
+  graphite: { light: '#c8cccd', mid: '#7d8386', shadow: '#50575a', deep: '#303638', edge: '#24292b', accent: '#c9ff64' },
+  'cool-grey': { light: '#eef3f5', mid: '#aebbc0', shadow: '#76868c', deep: '#4c5a60', edge: '#435158', accent: '#6f8f32' },
 };
 
 const add = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
@@ -160,7 +169,7 @@ export function PoseDiagram({
   mannequinPose,
   partnerPose,
   view = 'three-quarter',
-  palette = 'coral',
+  palette = 'pearl',
   showGuides = false,
   showPhotographer = false,
   compact = false,
@@ -182,7 +191,7 @@ export function PoseDiagram({
   const { skeletons, scale } = projectSkeletons(figures, view, upperFocus);
   refineIllustration(pose, skeletons, view, scale);
   const floor = Math.min(652, Math.max(...skeletons.flatMap((item) => [item.points.leftFoot.y, item.points.rightFoot.y])) + 18);
-  const background = pose.category === 'mirror' ? '#dcecf2' : pose.moods.includes('bold') ? '#f5ded8' : '#eee9df';
+  const background = pose.category === 'mirror' ? '#dce5e8' : pose.moods.includes('bold') ? '#d5d3d0' : '#e4e2de';
 
   return (
     <svg
@@ -195,8 +204,12 @@ export function PoseDiagram({
       <defs>
         <linearGradient id={`${localId}-paper`} x1="0" y1="0" x2="1" y2="1">
           <stop stopColor={background} />
-          <stop offset="1" stopColor={pose.moods.includes('soft') ? '#f7efe8' : '#dde7c8'} />
+          <stop offset=".56" stopColor={pose.moods.includes('soft') ? '#f2f1ef' : '#d9dcdb'} />
+          <stop offset="1" stopColor="#c7cbca" />
         </linearGradient>
+        <filter id={`${localId}-drop`} x="-30%" y="-30%" width="160%" height="170%">
+          <feDropShadow dx="0" dy="9" stdDeviation="8" floodColor="#252a2c" floodOpacity=".2" />
+        </filter>
         <marker id={`${localId}-arrow`} markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
           <path d="M0 0 9 4.5 0 9Z" fill="#20211f" />
         </marker>
@@ -223,11 +236,13 @@ export function PoseDiagram({
             key={index}
             skeleton={skeleton}
             scale={scale}
-            colors={palettes[index === 0 ? palette : palette === 'coral' ? 'lavender' : 'coral']}
+            id={`${localId}-figure-${index}`}
+            material={palettes[index === 0 ? palette : palette === 'graphite' ? 'cool-grey' : 'graphite']}
             phone={pose.props.includes('phone') && (index === 0 || pose.category === 'selfie')}
             guides={showGuides && !compact}
             gazeMarker={`${localId}-gaze`}
             compact={compact}
+            view={view}
           />
         ))}
         {pose.animation && <MotionMarks skeleton={skeletons[0]} marker={`${localId}-arrow`} compact={compact} />}
@@ -245,103 +260,149 @@ export function PoseDiagram({
   );
 }
 
+function segmentPath(a: Point2, b: Point2, startWidth: number, endWidth: number) {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const length = Math.max(1, Math.hypot(dx, dy));
+  const nx = -dy / length;
+  const ny = dx / length;
+  const s = { x: nx * startWidth * .5, y: ny * startWidth * .5 };
+  const e = { x: nx * endWidth * .5, y: ny * endWidth * .5 };
+  const c1 = { x: a.x + dx * .36, y: a.y + dy * .36 };
+  const c2 = { x: a.x + dx * .7, y: a.y + dy * .7 };
+  return [
+    `M ${a.x + s.x} ${a.y + s.y}`,
+    `C ${c1.x + s.x} ${c1.y + s.y} ${c2.x + e.x} ${c2.y + e.y} ${b.x + e.x} ${b.y + e.y}`,
+    `Q ${b.x} ${b.y} ${b.x - e.x} ${b.y - e.y}`,
+    `C ${c2.x - e.x} ${c2.y - e.y} ${c1.x - s.x} ${c1.y - s.y} ${a.x - s.x} ${a.y - s.y}`,
+    `Q ${a.x} ${a.y} ${a.x + s.x} ${a.y + s.y} Z`,
+  ].join(' ');
+}
+
 function Figure({
+  id,
   skeleton,
   scale,
-  colors,
+  material,
   phone,
   guides,
   gazeMarker,
   compact,
+  view,
 }: {
+  id: string;
   skeleton: ProjectedSkeleton;
   scale: number;
-  colors: { top: string; bottom: string; skin: string; accent: string };
+  material: MaterialPalette;
   phone: boolean;
   guides: boolean;
   gazeMarker: string;
   compact: boolean;
+  view: DiagramView;
 }) {
   const p = skeleton.points;
-  const limb = Math.max(15, scale * .105);
-  const leg = Math.max(20, scale * .145);
-  const outline = '#242522';
+  const arm = Math.max(20, scale * .125);
+  const leg = Math.max(27, scale * .17);
   const shoulderMid = midpoint(p.leftShoulder, p.rightShoulder);
   const hipMid = midpoint(p.leftHip, p.rightHip);
-  const headRadius = Math.max(24, Math.min(39, scale * .19));
+  const headRadius = Math.max(27, Math.min(44, scale * .205));
   const support = p.leftAnkle.y > p.rightAnkle.y ? p.leftAnkle : p.rightAnkle;
-  const armSegments: [Point2, Point2, string][] = [
-    [p.leftShoulder, p.leftElbow, colors.top], [p.leftElbow, p.leftWrist, colors.skin],
-    [p.rightShoulder, p.rightElbow, colors.top], [p.rightElbow, p.rightWrist, colors.skin],
-  ];
-  const legSegments: [Point2, Point2][] = [
-    [p.leftHip, p.leftKnee], [p.leftKnee, p.leftAnkle],
-    [p.rightHip, p.rightKnee], [p.rightKnee, p.rightAnkle],
-  ];
   const headDirection = apply(skeleton.headFrame.matrix, [0, 0, 1]);
-  const rawDirection = rawProjection(headDirection, 'three-quarter');
+  const rawDirection = rawProjection(headDirection, view);
   const gazeX = Math.abs(rawDirection.x) < .08 ? 1 : Math.sign(rawDirection.x);
   const headTilt = Math.atan2(p.rightShoulder.y - p.leftShoulder.y, p.rightShoulder.x - p.leftShoulder.x) * 180 / Math.PI;
+  const torso = `M ${p.leftShoulder.x} ${p.leftShoulder.y}
+    Q ${shoulderMid.x} ${shoulderMid.y - arm * .62} ${p.rightShoulder.x} ${p.rightShoulder.y}
+    Q ${p.rightShoulder.x + arm * .22} ${p.rightShoulder.y + arm * 1.1} ${p.rightHip.x + arm * .28} ${p.rightHip.y - 4}
+    Q ${hipMid.x} ${hipMid.y + arm * .15} ${p.leftHip.x - arm * .28} ${p.leftHip.y - 4}
+    Q ${p.leftShoulder.x - arm * .22} ${p.leftShoulder.y + arm * 1.1} ${p.leftShoulder.x} ${p.leftShoulder.y} Z`;
+  const pelvis = `M ${p.leftHip.x - leg * .28} ${p.leftHip.y - leg * .3}
+    Q ${hipMid.x} ${hipMid.y - leg * .62} ${p.rightHip.x + leg * .28} ${p.rightHip.y - leg * .3}
+    Q ${p.rightHip.x + leg * .5} ${p.rightHip.y + leg * .45} ${hipMid.x} ${hipMid.y + leg * .65}
+    Q ${p.leftHip.x - leg * .5} ${p.leftHip.y + leg * .45} ${p.leftHip.x - leg * .28} ${p.leftHip.y - leg * .3} Z`;
+
+  const limbs: { key: string; a: Point2; b: Point2; aWidth: number; bWidth: number; joint?: Point2 }[] = [
+    { key: 'left-thigh', a: p.leftHip, b: p.leftKnee, aWidth: leg * 1.08, bWidth: leg * .82, joint: p.leftKnee },
+    { key: 'right-thigh', a: p.rightHip, b: p.rightKnee, aWidth: leg * 1.08, bWidth: leg * .82, joint: p.rightKnee },
+    { key: 'left-calf', a: p.leftKnee, b: p.leftAnkle, aWidth: leg * .82, bWidth: leg * .58 },
+    { key: 'right-calf', a: p.rightKnee, b: p.rightAnkle, aWidth: leg * .82, bWidth: leg * .58 },
+    { key: 'left-upper-arm', a: p.leftShoulder, b: p.leftElbow, aWidth: arm * 1.08, bWidth: arm * .78, joint: p.leftElbow },
+    { key: 'right-upper-arm', a: p.rightShoulder, b: p.rightElbow, aWidth: arm * 1.08, bWidth: arm * .78, joint: p.rightElbow },
+    { key: 'left-forearm', a: p.leftElbow, b: p.leftWrist, aWidth: arm * .78, bWidth: arm * .55 },
+    { key: 'right-forearm', a: p.rightElbow, b: p.rightWrist, aWidth: arm * .78, bWidth: arm * .55 },
+  ];
 
   return (
-    <g>
-      <ellipse cx={hipMid.x} cy={Math.max(p.leftFoot.y, p.rightFoot.y) + 13} rx={Math.max(32, leg * 2.4)} ry="9" fill="#20211f" opacity=".12" />
-      {legSegments.map(([a, b], index) => (
-        <g key={`leg-${index}`}>
-          <path d={line(a, b)} stroke={outline} strokeWidth={leg + 7} strokeLinecap="round" />
-          <path d={line(a, b)} stroke={colors.bottom} strokeWidth={leg} strokeLinecap="round" />
-        </g>
-      ))}
-      <path d={`M ${p.leftAnkle.x} ${p.leftAnkle.y} L ${p.leftFoot.x} ${p.leftFoot.y}`} stroke={outline} strokeWidth={Math.max(12, leg * .64)} strokeLinecap="round" />
-      <path d={`M ${p.rightAnkle.x} ${p.rightAnkle.y} L ${p.rightFoot.x} ${p.rightFoot.y}`} stroke={outline} strokeWidth={Math.max(12, leg * .64)} strokeLinecap="round" />
+    <g filter={`url(#${id.split('-figure-')[0]}-drop)`}>
+      <defs>
+        <linearGradient id={`${id}-body`} x1="0" y1="0" x2="1" y2=".15">
+          <stop offset="0" stopColor={material.shadow} />
+          <stop offset=".22" stopColor={material.light} />
+          <stop offset=".5" stopColor={material.mid} />
+          <stop offset=".78" stopColor={material.shadow} />
+          <stop offset="1" stopColor={material.deep} />
+        </linearGradient>
+        <linearGradient id={`${id}-sheen`} x1="0" y1="0" x2="1" y2="0">
+          <stop stopColor="#fff" stopOpacity=".06" />
+          <stop offset=".28" stopColor="#fff" stopOpacity=".58" />
+          <stop offset=".52" stopColor="#fff" stopOpacity=".05" />
+          <stop offset="1" stopColor="#111719" stopOpacity=".32" />
+        </linearGradient>
+        <radialGradient id={`${id}-joint`} cx="32%" cy="25%" r="74%">
+          <stop stopColor={material.light} />
+          <stop offset=".5" stopColor={material.mid} />
+          <stop offset="1" stopColor={material.deep} />
+        </radialGradient>
+        <radialGradient id={`${id}-head`} cx="30%" cy="20%" r="82%">
+          <stop stopColor="#fff" />
+          <stop offset=".28" stopColor={material.light} />
+          <stop offset=".7" stopColor={material.mid} />
+          <stop offset="1" stopColor={material.deep} />
+        </radialGradient>
+      </defs>
 
-      {armSegments.map(([a, b, color], index) => (
-        <g key={`arm-${index}`}>
-          <path d={line(a, b)} stroke={outline} strokeWidth={limb + 7} strokeLinecap="round" strokeLinejoin="round" />
-          <path d={line(a, b)} stroke={color} strokeWidth={limb} strokeLinecap="round" strokeLinejoin="round" />
-        </g>
-      ))}
+      <ellipse cx={hipMid.x} cy={Math.max(p.leftFoot.y, p.rightFoot.y) + 15} rx={Math.max(40, leg * 2.7)} ry="11" fill="#252a2c" opacity=".2" />
 
-      <path
-        d={`M ${p.leftShoulder.x} ${p.leftShoulder.y} Q ${shoulderMid.x} ${shoulderMid.y - 12} ${p.rightShoulder.x} ${p.rightShoulder.y} L ${p.rightHip.x} ${p.rightHip.y} Q ${hipMid.x} ${hipMid.y + 12} ${p.leftHip.x} ${p.leftHip.y} Z`}
-        fill={colors.top}
-        stroke={outline}
-        strokeWidth="5"
-        strokeLinejoin="round"
-      />
-      <path d={line(p.leftHip, p.rightHip)} stroke={outline} strokeWidth="4" strokeOpacity=".45" />
-      <path d={line(shoulderMid, p.neck)} stroke={colors.skin} strokeWidth={Math.max(13, limb * .8)} strokeLinecap="round" />
+      {limbs.slice(0, 4).map(({ key, ...part }) => <SculptedLimb key={key} {...part} id={id} edge={material.edge} />)}
+      <SculptedFoot ankle={p.leftAnkle} foot={p.leftFoot} width={leg} id={id} edge={material.edge} />
+      <SculptedFoot ankle={p.rightAnkle} foot={p.rightFoot} width={leg} id={id} edge={material.edge} />
+
+      {limbs.slice(4).map(({ key, ...part }) => <SculptedLimb key={key} {...part} id={id} edge={material.edge} />)}
+
+      <path d={torso} fill={`url(#${id}-body)`} stroke={material.edge} strokeWidth="2.4" strokeLinejoin="round" />
+      <path d={torso} fill={`url(#${id}-sheen)`} opacity=".7" />
+      <path d={`M ${p.leftShoulder.x + arm * .18} ${p.leftShoulder.y + arm * .42} Q ${shoulderMid.x} ${shoulderMid.y + arm * .1} ${p.rightShoulder.x - arm * .18} ${p.rightShoulder.y + arm * .42}`} fill="none" stroke="#fff" strokeOpacity=".35" strokeWidth="2" strokeLinecap="round" />
+      <path d={`M ${shoulderMid.x} ${shoulderMid.y + arm * .28} Q ${hipMid.x - arm * .18} ${hipMid.y - arm * .38} ${hipMid.x} ${hipMid.y - leg * .25}`} fill="none" stroke={material.edge} strokeOpacity=".18" strokeWidth="2" />
+
+      <path d={pelvis} fill={`url(#${id}-joint)`} stroke={material.edge} strokeWidth="2.2" />
+      <path d={`M ${p.leftHip.x - leg * .12} ${p.leftHip.y} Q ${hipMid.x} ${hipMid.y + leg * .28} ${p.rightHip.x + leg * .12} ${p.rightHip.y}`} fill="none" stroke="#fff" strokeOpacity=".28" strokeWidth="2" />
+
+      <path d={segmentPath(shoulderMid, p.neck, arm * .65, arm * .55)} fill={`url(#${id}-body)`} stroke={material.edge} strokeWidth="2" />
+
+      {[p.leftShoulder, p.rightShoulder].map((joint, index) => (
+        <circle key={`shoulder-${index}`} cx={joint.x} cy={joint.y} r={arm * .55} fill={`url(#${id}-joint)`} stroke={material.edge} strokeWidth="2" />
+      ))}
 
       <g transform={`rotate(${headTilt.toFixed(1)} ${p.head.x} ${p.head.y})`}>
-        <ellipse cx={p.head.x} cy={p.head.y} rx={headRadius * .82} ry={headRadius} fill={colors.skin} stroke={outline} strokeWidth="4" />
-        <path d={`M ${p.head.x - headRadius * .58} ${p.head.y - headRadius * .52} Q ${p.head.x} ${p.head.y - headRadius * .9} ${p.head.x + headRadius * .58} ${p.head.y - headRadius * .5}`} fill="none" stroke={outline} strokeWidth="7" strokeLinecap="round" />
-        <circle cx={p.head.x - 8 + gazeX * 2} cy={p.head.y - 3} r="2.4" fill={outline} />
-        <circle cx={p.head.x + 8 + gazeX * 2} cy={p.head.y - 3} r="2.4" fill={outline} />
-        <path d={`M ${p.head.x + gazeX * 2} ${p.head.y + 1} l ${gazeX * 5} 7 l ${-gazeX * 5} 1`} fill="none" stroke={outline} strokeWidth="2" strokeLinecap="round" />
-        <path d={`M ${p.head.x - 7} ${p.head.y + 14} Q ${p.head.x} ${p.head.y + 18} ${p.head.x + 7} ${p.head.y + 14}`} fill="none" stroke="#7f3d3b" strokeWidth="2" strokeLinecap="round" />
+        <ellipse cx={p.head.x} cy={p.head.y} rx={headRadius * .78} ry={headRadius} fill={`url(#${id}-head)`} stroke={material.edge} strokeWidth="2.4" />
+        <path d={`M ${p.head.x - headRadius * .5} ${p.head.y - headRadius * .48} Q ${p.head.x - headRadius * .35} ${p.head.y - headRadius * .72} ${p.head.x - headRadius * .08} ${p.head.y - headRadius * .78}`} fill="none" stroke="#fff" strokeOpacity=".52" strokeWidth="3" strokeLinecap="round" />
+        <path d={`M ${p.head.x + headRadius * .52} ${p.head.y - headRadius * .4} Q ${p.head.x + headRadius * .78} ${p.head.y + headRadius * .12} ${p.head.x + headRadius * .32} ${p.head.y + headRadius * .68}`} fill="none" stroke={material.edge} strokeOpacity=".22" strokeWidth="3" strokeLinecap="round" />
       </g>
 
-      <Hand point={p.leftHand} wrist={p.leftWrist} skin={colors.skin} outline={outline} size={limb} />
-      <Hand point={p.rightHand} wrist={p.rightWrist} skin={colors.skin} outline={outline} size={limb} />
+      <SculptedHand point={p.leftHand} wrist={p.leftWrist} size={arm} id={id} edge={material.edge} />
+      <SculptedHand point={p.rightHand} wrist={p.rightWrist} size={arm} id={id} edge={material.edge} />
       {phone && <Phone hand={p.rightHand} wrist={p.rightWrist} />}
 
       {!compact && (
-        <path
-          d={`M ${p.head.x + gazeX * headRadius * .5} ${p.head.y - 2} L ${p.head.x + gazeX * (headRadius + 44)} ${p.head.y - 10}`}
-          fill="none"
-          stroke="#6f8f32"
-          strokeWidth="3"
-          strokeDasharray="6 6"
-          markerEnd={`url(#${gazeMarker})`}
-        />
+        <path d={`M ${p.head.x + gazeX * headRadius * .72} ${p.head.y - 2} L ${p.head.x + gazeX * (headRadius + 44)} ${p.head.y - 10}`} fill="none" stroke="#6f8f32" strokeWidth="3" strokeDasharray="6 6" markerEnd={`url(#${gazeMarker})`} />
       )}
 
       {guides && (
         <g>
           {(['leftShoulder', 'rightShoulder', 'leftElbow', 'rightElbow', 'leftWrist', 'rightWrist', 'leftHip', 'rightHip', 'leftKnee', 'rightKnee', 'leftAnkle', 'rightAnkle'] as BodyPoint[]).map((name) => (
             <g key={name}>
-              <circle cx={p[name].x} cy={p[name].y} r="7" fill={colors.accent} stroke={outline} strokeWidth="2" />
-              <circle cx={p[name].x} cy={p[name].y} r="2" fill={outline} />
+              <circle cx={p[name].x} cy={p[name].y} r="7" fill={material.accent} stroke={material.edge} strokeWidth="2" />
+              <circle cx={p[name].x} cy={p[name].y} r="2" fill={material.edge} />
             </g>
           ))}
           <path d={`M ${hipMid.x} ${hipMid.y - 8} L ${support.x} ${support.y - 16}`} stroke="#ff654f" strokeWidth="4" strokeDasharray="7 7" />
@@ -352,16 +413,45 @@ function Figure({
   );
 }
 
-function Hand({ point, wrist, skin, outline, size }: { point: Point2; wrist: Point2; skin: string; outline: string; size: number }) {
-  const angle = Math.atan2(point.y - wrist.y, point.x - wrist.x);
-  const dx = Math.cos(angle); const dy = Math.sin(angle);
-  const px = -dy; const py = dx;
+function SculptedLimb({ id, edge, a, b, aWidth, bWidth, joint }: { id: string; edge: string; a: Point2; b: Point2; aWidth: number; bWidth: number; joint?: Point2 }) {
+  const d = segmentPath(a, b, aWidth, bWidth);
   return (
     <g>
-      <ellipse cx={point.x} cy={point.y} rx={Math.max(7, size * .55)} ry={Math.max(9, size * .72)} transform={`rotate(${angle * 180 / Math.PI + 90} ${point.x} ${point.y})`} fill={skin} stroke={outline} strokeWidth="3" />
-      {[-1, 0, 1].map((offset) => (
-        <path key={offset} d={`M ${point.x + px * offset * 3} ${point.y + py * offset * 3} l ${dx * 8} ${dy * 8}`} stroke={outline} strokeOpacity=".45" strokeWidth="1.4" strokeLinecap="round" />
+      <path d={d} fill={`url(#${id}-body)`} stroke={edge} strokeWidth="2.2" strokeLinejoin="round" />
+      <path d={d} fill={`url(#${id}-sheen)`} opacity=".72" />
+      {joint && (
+        <g>
+          <circle cx={joint.x} cy={joint.y} r={bWidth * .56} fill={`url(#${id}-joint)`} stroke={edge} strokeWidth="2" />
+          <ellipse cx={joint.x - bWidth * .12} cy={joint.y - bWidth * .15} rx={bWidth * .18} ry={bWidth * .1} fill="#fff" opacity=".32" />
+        </g>
+      )}
+    </g>
+  );
+}
+
+function SculptedHand({ point, wrist, size, id, edge }: { point: Point2; wrist: Point2; size: number; id: string; edge: string }) {
+  const angle = Math.atan2(point.y - wrist.y, point.x - wrist.x);
+  const angleDeg = angle * 180 / Math.PI;
+  const palmLength = Math.max(14, size * .84);
+  const palmWidth = Math.max(10, size * .62);
+  return (
+    <g transform={`translate(${point.x} ${point.y}) rotate(${angleDeg})`}>
+      <ellipse cx={-palmLength * .16} cy="0" rx={palmLength * .52} ry={palmWidth * .52} fill={`url(#${id}-joint)`} stroke={edge} strokeWidth="1.8" />
+      {[-.32, -.1, .12, .34].map((offset, index) => (
+        <path key={offset} d={`M ${palmLength * .18} ${offset * palmWidth} Q ${palmLength * .62} ${offset * palmWidth * 1.05} ${palmLength * (.72 + index * .035)} ${offset * palmWidth * .82}`} fill="none" stroke={`url(#${id}-body)`} strokeWidth={Math.max(3.2, size * .17)} strokeLinecap="round" />
       ))}
+      <path d={`M ${palmLength * .02} ${palmWidth * .32} Q ${palmLength * .34} ${palmWidth * .72} ${palmLength * .5} ${palmWidth * .48}`} fill="none" stroke={`url(#${id}-body)`} strokeWidth={Math.max(3.4, size * .18)} strokeLinecap="round" />
+    </g>
+  );
+}
+
+function SculptedFoot({ ankle, foot, width, id, edge }: { ankle: Point2; foot: Point2; width: number; id: string; edge: string }) {
+  const d = segmentPath(ankle, foot, width * .56, width * .78);
+  return (
+    <g>
+      <path d={d} fill={`url(#${id}-body)`} stroke={edge} strokeWidth="2.2" />
+      <ellipse cx={foot.x} cy={foot.y} rx={width * .5} ry={width * .28} fill={`url(#${id}-joint)`} stroke={edge} strokeWidth="1.8" />
+      <path d={line(ankle, foot)} stroke="#fff" strokeOpacity=".28" strokeWidth="2" strokeLinecap="round" />
     </g>
   );
 }
@@ -473,6 +563,22 @@ function refineIllustration(pose: Pose, skeletons: ProjectedSkeleton[], view: Di
     const q = skeletons[1].points;
     const centerX = (p.root.x + q.root.x) / 2;
     const handY = Math.max(p.leftHip.y, q.rightHip.y) - u * .25;
+    if (pose.id === 'reference-arc-duo') {
+      const pShift = centerX - u * 1.12 - p.root.x;
+      const qShift = centerX + u * 1.02 - q.root.x;
+      (Object.keys(p) as BodyPoint[]).forEach((name) => { p[name].x += pShift; });
+      (Object.keys(q) as BodyPoint[]).forEach((name) => { q[name].x += qShift; });
+      (['head', 'neck', 'leftShoulder', 'rightShoulder'] as BodyPoint[]).forEach((name) => { p[name].x -= u * .28; q[name].x += u * .22; });
+      p.head.x -= u * .26;
+      q.head.x += u * .2;
+      p.leftHip.x += u * .18; p.rightHip.x += u * .18;
+      q.leftHip.x -= u * .18; q.rightHip.x -= u * .18;
+      bendArm(p, 'left', { x: p.head.x - u * .32, y: Math.max(72, p.head.y - u * 1.05) }, -1);
+      bendArm(p, 'right', { x: p.rightHip.x - u * .18, y: p.rightHip.y + u * 1.2 }, 1);
+      bendArm(q, 'left', { x: q.head.x - u * .08, y: q.head.y - u * .68 }, 1);
+      bendArm(q, 'right', { x: q.head.x + u * .82, y: q.head.y - u * .08 }, -1);
+      placeLeg(q, 'right', { x: q.rightHip.x + u * .75, y: q.rightHip.y + u * 1.55 }, { x: q.rightHip.x + u * 1.18, y: q.rightHip.y + u * 2.8 }, 1);
+    }
     if (['side-sync', 'connected-walk', 'handhold-pause', 'playful-counterbalance', 'walkaway-glance'].includes(pose.id)) {
       bendArm(p, 'right', { x: centerX - 5, y: handY }, -1);
       bendArm(q, 'left', { x: centerX + 5, y: handY }, 1);

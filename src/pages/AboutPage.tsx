@@ -13,7 +13,7 @@ export function AboutPage() {
       <PageIntro eyebrow="About PosePilot" title="Creative direction without surveillance." copy="PosePilot turns a few creative choices into practical pose direction. It is a static, open-source browser app—not a camera, social network or facial-analysis tool." />
       <section className="about-manifesto">
         <div className="manifesto-number">{poseStats.total}</div>
-        <div><span>original local pose guides</span><h2>The intelligence is transparent.</h2><p>Each pose has structured tags, authored coaching and its own articulated joint configuration, rendered as a readable 2D blueprint. A weighted local algorithm compares those tags with your answers. There is no remote model pretending to know you.</p></div>
+        <div><span>original local pose guides</span><h2>The intelligence is transparent.</h2><p>Each pose has structured tags, authored coaching and its own articulated joint configuration, rendered as a shaded SVG mannequin. A weighted local algorithm compares those tags with your answers. There is no remote model pretending to know you.</p></div>
       </section>
       <section className="privacy-grid">
         <article><EyeOff /><span>01</span><h3>We never see you.</h3><p>No webcam access, photo uploads, face scanning, recognition or biometric processing.</p></article>

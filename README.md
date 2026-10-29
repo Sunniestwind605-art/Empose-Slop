@@ -1,6 +1,6 @@
 # PosePilot
 
-PosePilot is a privacy-first, browser-based photography pose coach. A guided questionnaire turns creative intent into ranked pose recommendations, then a detailed 2D pose blueprint demonstrates each pose and movement sequence.
+PosePilot is a privacy-first, browser-based photography pose coach. A guided questionnaire turns creative intent into ranked pose recommendations, then a sculpted pseudo-3D SVG mannequin demonstrates each pose and movement sequence.
 
 Expected GitHub Pages URL: <https://Sunniestwind605-art.github.io/Empose-Slop/>
 
@@ -10,7 +10,8 @@ Expected GitHub Pages URL: <https://Sunniestwind605-art.github.io/Empose-Slop/>
 - Weighted local recommendation engine using subject, primary/supporting moods, occasion, location, camera mode, framing, help areas, expressiveness, movement and optional props.
 - 64 authored pose guides: standing, seated, portrait, pair, mirror-selfie and front-camera directions.
 - Search, six library filters, active-filter chips, sorting and useful empty states.
-- Detailed SVG pose blueprints with articulated shoulders, elbows, wrists, hips, knees, ankles, head and torso.
+- Sculpted grey SVG mannequins with articulated shoulders, elbows, wrists, hips, knees, ankles, hands, feet, head and torso.
+- Layered gradients, tapered anatomical silhouettes, joint shells and contact shadows create volume without a 3D runtime.
 - Pose-specific joint configurations, pair placement, phone prop, seated and mirror context, three colour palettes, front/three-quarter/side views, joint labels, gaze arrows and weight guides.
 - Real three-stage motion keyframes with play, pause and stage navigation; reduced-motion users get manual stages.
 - Optional in-scene photographer/camera placement guide plus written height, angle, distance and composition cues.
@@ -48,9 +49,9 @@ pnpm preview
 
 Nothing is sent over the network. The interface never claims that a remote AI model is scoring the user.
 
-## How the illustration system works
+## How the mannequin system works
 
-Each entry in `src/data/poses.ts` owns a complete `modelPose` with root position/rotation and rotations for the torso, head and limb joints. `src/features/pose-viewer/PoseDiagram.tsx` applies forward kinematics so the wrist follows the elbow, the elbow follows the shoulder, the ankle follows the knee and the knee follows the hip. The same structure is projected into readable front, three-quarter and side SVG views.
+Each entry in `src/data/poses.ts` owns a complete `modelPose` with root position/rotation and rotations for the torso, head and limb joints. `src/features/pose-viewer/PoseDiagram.tsx` applies forward kinematics so the wrist follows the elbow, the elbow follows the shoulder, the ankle follows the knee and the knee follows the hip. The same structure is projected into front, three-quarter and side SVG views, then assembled from tapered body-part paths with material gradients, joint shells, highlights and contact shadows.
 
 Dynamic poses add three authored `PoseKeyframe` objects with capture directions. The UI advances through them on each keyframe duration or lets the user pause and step manually. Pair poses include a second independent mannequin configuration.
 

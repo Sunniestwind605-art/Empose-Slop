@@ -10,9 +10,9 @@ const viewLabels: { value: DiagramView; label: string }[] = [
 ];
 
 const paletteColors: Record<DiagramPalette, string> = {
-  coral: '#ff654f',
-  ink: '#343834',
-  lavender: '#7774ad',
+  pearl: '#d7dadb',
+  graphite: '#596063',
+  'cool-grey': '#9aa8ae',
 };
 
 export default function PoseViewer2D({
@@ -24,8 +24,8 @@ export default function PoseViewer2D({
   showPhotographer?: boolean;
   showCueRail?: boolean;
 }) {
-  const [palette, setPalette] = useState<DiagramPalette>('coral');
-  const [guides, setGuides] = useState(true);
+  const [palette, setPalette] = useState<DiagramPalette>('pearl');
+  const [guides, setGuides] = useState(false);
   const [view, setView] = useState<DiagramView>('three-quarter');
   const [playing, setPlaying] = useState(Boolean(pose.animation));
   const [stage, setStage] = useState(0);
@@ -66,12 +66,14 @@ export default function PoseViewer2D({
           showGuides={guides}
           showPhotographer={showPhotographer}
         />
-        <div className="viewer-badge">{view.replace('-', ' ')} view · clean 2D pose blueprint</div>
-        <div className="diagram-legend" aria-hidden="true">
-          <span><i className="legend-joint" /> joints</span>
-          <span><i className="legend-gaze" /> gaze</span>
-          <span><i className="legend-weight" /> weight</span>
-        </div>
+        <div className="viewer-badge">{view.replace('-', ' ')} view · sculpted articulated study</div>
+        {guides && (
+          <div className="diagram-legend" aria-hidden="true">
+            <span><i className="legend-joint" /> pivot joints</span>
+            <span><i className="legend-gaze" /> head direction</span>
+            <span><i className="legend-weight" /> balance</span>
+          </div>
+        )}
       </div>
 
       <div className="viewer-controls" aria-label="Pose illustration controls">
@@ -91,14 +93,14 @@ export default function PoseViewer2D({
           <ScanLine size={17} /> {guides ? 'Hide labels' : 'Show labels'}
         </button>
         <span className="control-separator" />
-        <span className="palette-label">Colour</span>
+        <span className="palette-label">Material</span>
         {(Object.keys(paletteColors) as DiagramPalette[]).map((value) => (
           <button
             key={value}
             className={`material-swatch ${palette === value ? 'active' : ''}`}
             style={{ backgroundColor: paletteColors[value] }}
             onClick={() => setPalette(value)}
-            aria-label={`Use ${value} illustration palette`}
+            aria-label={`Use ${value} mannequin material`}
             aria-pressed={palette === value}
           />
         ))}
