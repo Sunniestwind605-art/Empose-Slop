@@ -29,9 +29,9 @@ type MaterialPalette = {
 };
 
 const palettes: Record<DiagramPalette, MaterialPalette> = {
-  pearl: { light: '#f5f6f6', mid: '#c9cdce', shadow: '#969b9d', deep: '#656b6e', edge: '#34393b', accent: '#ff654f' },
-  graphite: { light: '#777d7f', mid: '#4c5254', shadow: '#34393b', deep: '#202426', edge: '#171a1b', accent: '#c9ff64' },
-  'cool-grey': { light: '#e4ebee', mid: '#acc1ca', shadow: '#7f9aa6', deep: '#58727e', edge: '#29373d', accent: '#6f8f32' },
+  pearl: { light: '#ebeae7', mid: '#cbc9c5', shadow: '#aaa9a4', deep: '#8a8a85', edge: '#6d6e6a', accent: '#ff654f' },
+  graphite: { light: '#777977', mid: '#626461', shadow: '#50524f', deep: '#414340', edge: '#343633', accent: '#c9ff64' },
+  'cool-grey': { light: '#dce4e5', mid: '#bdcbce', shadow: '#9babad', deep: '#7f9194', edge: '#637477', accent: '#6f8f32' },
 };
 
 const add = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
@@ -81,12 +81,12 @@ function buildSkeleton(pose: MannequinPose): Skeleton {
   const world: Frame = { origin: [...pose.position], matrix: euler(pose.rotation) };
   const root = child(world, [0, 0, 0], pose.joints.root);
   const torso = child(root, [0, .35, 0], pose.joints.torso);
-  const head = child(torso, [0, 1.16, 0], pose.joints.head);
+  const head = child(torso, [0, .98, 0], pose.joints.head);
 
-  const leftShoulder = child(torso, [-.42, .84, 0], pose.joints.leftShoulder);
+  const leftShoulder = child(torso, [-.42, .68, 0], pose.joints.leftShoulder);
   const leftElbow = child(leftShoulder, [0, -.57, 0], pose.joints.leftElbow);
   const leftWrist = child(leftElbow, [0, -.51, 0], pose.joints.leftWrist);
-  const rightShoulder = child(torso, [.42, .84, 0], pose.joints.rightShoulder);
+  const rightShoulder = child(torso, [.42, .68, 0], pose.joints.rightShoulder);
   const rightElbow = child(rightShoulder, [0, -.57, 0], pose.joints.rightElbow);
   const rightWrist = child(rightElbow, [0, -.51, 0], pose.joints.rightWrist);
 
@@ -172,7 +172,7 @@ function refitProjectedSkeletons(skeletons: ProjectedSkeleton[], upperFocus: boo
   const maxY = Math.max(...points.map((point) => point.y));
   const width = Math.max(1, maxX - minX);
   const height = Math.max(1, maxY - minY);
-  const factor = Math.min(1, 470 / width, (upperFocus ? 520 : 570) / height);
+  const factor = Math.min(1, 440 / width, (upperFocus ? 510 : 530) / height);
   if (factor >= .995) return 1;
   const centerX = (minX + maxX) / 2;
   const centerY = (minY + maxY) / 2;
@@ -236,7 +236,7 @@ export function PoseDiagram({
           <stop offset="1" stopColor="#c7cbca" />
         </linearGradient>
         <filter id={`${localId}-drop`} x="-30%" y="-30%" width="160%" height="170%">
-          <feDropShadow dx="0" dy="4" stdDeviation="3.5" floodColor="#252a2c" floodOpacity=".18" />
+          <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#252a2c" floodOpacity=".12" />
         </filter>
         <marker id={`${localId}-arrow`} markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
           <path d="M0 0 9 4.5 0 9Z" fill="#20211f" />
@@ -358,91 +358,77 @@ function Figure({
   const orderedHips = [p.leftHip, p.rightHip].sort((a, b) => a.x - b.x);
   const [leftShoulder, rightShoulder] = orderedShoulders;
   const [leftHip, rightHip] = orderedHips;
-  const waistCenter = pointBetween(shoulderMid, hipMid, .67);
-  const shoulderHalf = Math.max(arm * 1.45, Math.abs(rightShoulder.x - leftShoulder.x) * .56);
-  const hipHalf = Math.max(leg * .82, Math.abs(rightHip.x - leftHip.x) * .64);
-  const waistHalf = Math.max(arm * .82, Math.min(shoulderHalf * .58, hipHalf * .7));
-  const torso = `M ${shoulderMid.x - shoulderHalf} ${shoulderMid.y + arm * .18}
-    C ${shoulderMid.x - shoulderHalf * 1.05} ${shoulderMid.y + arm * .8}, ${waistCenter.x - waistHalf * 1.15} ${waistCenter.y - arm * .72}, ${waistCenter.x - waistHalf} ${waistCenter.y}
-    C ${waistCenter.x - waistHalf * .94} ${waistCenter.y + arm * .35}, ${hipMid.x - hipHalf * .96} ${hipMid.y - leg * .56}, ${hipMid.x - hipHalf} ${hipMid.y - leg * .28}
-    Q ${hipMid.x} ${hipMid.y + leg * .05} ${hipMid.x + hipHalf} ${hipMid.y - leg * .28}
-    C ${hipMid.x + hipHalf * .96} ${hipMid.y - leg * .56}, ${waistCenter.x + waistHalf * .94} ${waistCenter.y + arm * .35}, ${waistCenter.x + waistHalf} ${waistCenter.y}
-    C ${waistCenter.x + waistHalf * 1.15} ${waistCenter.y - arm * .72}, ${shoulderMid.x + shoulderHalf * 1.05} ${shoulderMid.y + arm * .8}, ${shoulderMid.x + shoulderHalf} ${shoulderMid.y + arm * .18}
-    Q ${shoulderMid.x} ${shoulderMid.y - arm * .58} ${shoulderMid.x - shoulderHalf} ${shoulderMid.y + arm * .18} Z`;
-  const pelvis = `M ${hipMid.x - hipHalf * 1.03} ${hipMid.y - leg * .38}
-    Q ${hipMid.x} ${hipMid.y - leg * .66} ${hipMid.x + hipHalf * 1.03} ${hipMid.y - leg * .38}
-    C ${hipMid.x + hipHalf * 1.16} ${hipMid.y + leg * .18}, ${hipMid.x + hipHalf * .7} ${hipMid.y + leg * .7}, ${hipMid.x} ${hipMid.y + leg * .76}
-    C ${hipMid.x - hipHalf * .7} ${hipMid.y + leg * .7}, ${hipMid.x - hipHalf * 1.16} ${hipMid.y + leg * .18}, ${hipMid.x - hipHalf * 1.03} ${hipMid.y - leg * .38} Z`;
+  const waistCenter = pointBetween(shoulderMid, hipMid, .55);
+  const chestCenter = pointBetween(shoulderMid, waistCenter, .48);
+  const shoulderHalf = Math.max(arm * 1.38, Math.abs(rightShoulder.x - leftShoulder.x) * .54);
+  const chestHalf = shoulderHalf * .94;
+  const hipHalf = Math.max(leg * .98, Math.abs(rightHip.x - leftHip.x) * .68);
+  const waistHalf = Math.max(arm * .7, Math.min(shoulderHalf * .53, hipHalf * .58));
+  const groinY = hipMid.y + leg * .64;
+  const torso = `M ${shoulderMid.x} ${shoulderMid.y - arm * .24}
+    C ${shoulderMid.x - shoulderHalf * .36} ${shoulderMid.y - arm * .4}, ${shoulderMid.x - shoulderHalf} ${shoulderMid.y - arm * .12}, ${shoulderMid.x - shoulderHalf} ${shoulderMid.y + arm * .18}
+    C ${shoulderMid.x - shoulderHalf * 1.02} ${shoulderMid.y + arm * .72}, ${chestCenter.x - chestHalf * 1.03} ${chestCenter.y - arm * .12}, ${chestCenter.x - chestHalf} ${chestCenter.y + arm * .3}
+    C ${chestCenter.x - chestHalf * .9} ${chestCenter.y + arm * .86}, ${waistCenter.x - waistHalf * 1.02} ${waistCenter.y - arm * .34}, ${waistCenter.x - waistHalf} ${waistCenter.y + arm * .12}
+    C ${waistCenter.x - waistHalf * .98} ${waistCenter.y + arm * .58}, ${hipMid.x - hipHalf * 1.05} ${hipMid.y - leg * .42}, ${hipMid.x - hipHalf} ${hipMid.y}
+    C ${hipMid.x - hipHalf * .92} ${hipMid.y + leg * .42}, ${hipMid.x - leg * .44} ${groinY - leg * .08}, ${hipMid.x - leg * .18} ${groinY}
+    Q ${hipMid.x} ${groinY + leg * .14}, ${hipMid.x + leg * .18} ${groinY}
+    C ${hipMid.x + leg * .44} ${groinY - leg * .08}, ${hipMid.x + hipHalf * .92} ${hipMid.y + leg * .42}, ${hipMid.x + hipHalf} ${hipMid.y}
+    C ${hipMid.x + hipHalf * 1.05} ${hipMid.y - leg * .42}, ${waistCenter.x + waistHalf * .98} ${waistCenter.y + arm * .58}, ${waistCenter.x + waistHalf} ${waistCenter.y + arm * .12}
+    C ${waistCenter.x + waistHalf * 1.02} ${waistCenter.y - arm * .34}, ${chestCenter.x + chestHalf * .9} ${chestCenter.y + arm * .86}, ${chestCenter.x + chestHalf} ${chestCenter.y + arm * .34}
+    C ${chestCenter.x + chestHalf * 1.03} ${chestCenter.y - arm * .12}, ${shoulderMid.x + shoulderHalf * 1.02} ${shoulderMid.y + arm * .72}, ${shoulderMid.x + shoulderHalf} ${shoulderMid.y + arm * .18}
+    C ${shoulderMid.x + shoulderHalf} ${shoulderMid.y - arm * .12}, ${shoulderMid.x + shoulderHalf * .36} ${shoulderMid.y - arm * .4}, ${shoulderMid.x} ${shoulderMid.y - arm * .24} Z`;
 
   const legs = [
-    { name: 'left-thigh', a: p.leftHip, b: p.leftKnee, startWidth: leg * 1.08, midWidth: leg * 1.18, endWidth: leg * .7, joint: p.leftKnee },
-    { name: 'right-thigh', a: p.rightHip, b: p.rightKnee, startWidth: leg * 1.08, midWidth: leg * 1.18, endWidth: leg * .7, joint: p.rightKnee },
-    { name: 'left-calf', a: p.leftKnee, b: p.leftAnkle, startWidth: leg * .7, midWidth: leg * .9, endWidth: leg * .47 },
-    { name: 'right-calf', a: p.rightKnee, b: p.rightAnkle, startWidth: leg * .7, midWidth: leg * .9, endWidth: leg * .47 },
+    { name: 'left-leg', start: p.leftHip, joint: p.leftKnee, end: p.leftAnkle, startWidth: leg * 1.12, jointWidth: leg * .72, endWidth: leg * .48, firstBulge: leg * 1.28, secondBulge: leg * .98 },
+    { name: 'right-leg', start: p.rightHip, joint: p.rightKnee, end: p.rightAnkle, startWidth: leg * 1.12, jointWidth: leg * .72, endWidth: leg * .48, firstBulge: leg * 1.28, secondBulge: leg * .98 },
   ];
   const arms = [
-    { name: 'left-upper-arm', a: p.leftShoulder, b: p.leftElbow, startWidth: arm * 1.18, midWidth: arm * 1.08, endWidth: arm * .7, joint: p.leftElbow },
-    { name: 'right-upper-arm', a: p.rightShoulder, b: p.rightElbow, startWidth: arm * 1.18, midWidth: arm * 1.08, endWidth: arm * .7, joint: p.rightElbow },
-    { name: 'left-forearm', a: p.leftElbow, b: p.leftWrist, startWidth: arm * .7, midWidth: arm * .88, endWidth: arm * .48 },
-    { name: 'right-forearm', a: p.rightElbow, b: p.rightWrist, startWidth: arm * .7, midWidth: arm * .88, endWidth: arm * .48 },
+    { name: 'left-arm', start: p.leftShoulder, joint: p.leftElbow, end: p.leftWrist, startWidth: arm * 1.12, jointWidth: arm * .64, endWidth: arm * .45, firstBulge: arm * 1.08, secondBulge: arm * .79 },
+    { name: 'right-arm', start: p.rightShoulder, joint: p.rightElbow, end: p.rightWrist, startWidth: arm * 1.12, jointWidth: arm * .64, endWidth: arm * .45, firstBulge: arm * 1.08, secondBulge: arm * .79 },
   ];
 
   return (
     <g filter={`url(#${id.split('-figure-')[0]}-drop)`}>
       <defs>
-        <linearGradient id={`${id}-body`} x1="0" y1="0" x2="1" y2=".12">
+        <linearGradient id={`${id}-body`} x1="0" y1="0" x2="1" y2="0">
           <stop offset="0" stopColor={material.shadow} />
-          <stop offset=".22" stopColor={material.light} />
-          <stop offset=".5" stopColor={material.mid} />
-          <stop offset=".78" stopColor={material.shadow} />
-          <stop offset="1" stopColor={material.deep} />
-        </linearGradient>
-        <linearGradient id={`${id}-sheen`} x1="0" y1="0" x2="1" y2="0">
-          <stop stopColor="#fff" stopOpacity=".06" />
-          <stop offset=".28" stopColor="#fff" stopOpacity=".58" />
-          <stop offset=".52" stopColor="#fff" stopOpacity=".05" />
-          <stop offset="1" stopColor="#111719" stopOpacity=".32" />
-        </linearGradient>
-        <radialGradient id={`${id}-joint`} cx="32%" cy="25%" r="74%">
-          <stop stopColor={material.light} />
-          <stop offset=".5" stopColor={material.mid} />
-          <stop offset="1" stopColor={material.deep} />
-        </radialGradient>
-        <radialGradient id={`${id}-head`} cx="30%" cy="20%" r="82%">
-          <stop stopColor="#fff" />
-          <stop offset=".28" stopColor={material.light} />
+          <stop offset=".38" stopColor={material.light} />
           <stop offset=".7" stopColor={material.mid} />
-          <stop offset="1" stopColor={material.deep} />
+          <stop offset="1" stopColor={material.shadow} />
+        </linearGradient>
+        <radialGradient id={`${id}-head`} cx="30%" cy="20%" r="82%">
+          <stop stopColor={material.light} />
+          <stop offset=".58" stopColor={material.mid} />
+          <stop offset="1" stopColor={material.shadow} />
         </radialGradient>
       </defs>
 
-      <ellipse cx={hipMid.x} cy={Math.max(p.leftFoot.y, p.rightFoot.y) + 15} rx={Math.max(40, leg * 2.7)} ry="11" fill="#252a2c" opacity=".2" />
+      <ellipse cx={hipMid.x} cy={Math.max(p.leftFoot.y, p.rightFoot.y) + 13} rx={Math.max(40, leg * 2.7)} ry="10" fill="#252a2c" opacity=".12" />
 
-      {legs.map((part) => <SculptedLimb key={part.name} {...part} id={id} material={material} />)}
+      {legs.map((part) => <ContinuousLimb key={part.name} {...part} id={id} material={material} />)}
       <SculptedFoot ankle={p.leftAnkle} foot={p.leftFoot} width={leg} id={id} edge={material.edge} />
       <SculptedFoot ankle={p.rightAnkle} foot={p.rightFoot} width={leg} id={id} edge={material.edge} />
 
-      <path d={torso} fill={`url(#${id}-body)`} stroke={material.edge} strokeWidth="2.4" strokeLinejoin="round" />
-      <path d={torso} fill={`url(#${id}-sheen)`} opacity=".34" />
-      <path d={`M ${shoulderMid.x - shoulderHalf * .72} ${shoulderMid.y + arm * .55} Q ${shoulderMid.x} ${shoulderMid.y + arm * .12} ${shoulderMid.x + shoulderHalf * .72} ${shoulderMid.y + arm * .55} Q ${shoulderMid.x + waistHalf * .92} ${waistCenter.y - arm * .5} ${waistCenter.x} ${waistCenter.y - arm * .34} Q ${shoulderMid.x - waistHalf * .92} ${waistCenter.y - arm * .5} ${shoulderMid.x - shoulderHalf * .72} ${shoulderMid.y + arm * .55} Z`} fill={material.light} fillOpacity=".2" stroke="#fff" strokeOpacity=".22" strokeWidth="1.4" />
-      <path d={`M ${waistCenter.x - waistHalf * .94} ${waistCenter.y - 2} Q ${waistCenter.x} ${waistCenter.y + arm * .32} ${waistCenter.x + waistHalf * .94} ${waistCenter.y - 2}`} fill="none" stroke={material.edge} strokeOpacity=".32" strokeWidth="2" />
+      <path d={anatomicalSegmentPath(shoulderMid, p.neck, arm * .68, arm * .66, arm * .56)} fill={`url(#${id}-body)`} stroke={material.edge} strokeWidth="1.1" strokeOpacity=".72" />
+      {arms.map((part) => <ContinuousLimb key={part.name} {...part} id={id} material={material} />)}
 
-      <path d={pelvis} fill={`url(#${id}-joint)`} stroke={material.edge} strokeWidth="2.2" />
-      <path d={`M ${hipMid.x - hipHalf * .85} ${hipMid.y - leg * .16} Q ${hipMid.x} ${hipMid.y + leg * .38} ${hipMid.x + hipHalf * .85} ${hipMid.y - leg * .16}`} fill="none" stroke="#fff" strokeOpacity=".3" strokeWidth="2" />
-
-      <path d={anatomicalSegmentPath(shoulderMid, p.neck, arm * .72, arm * .68, arm * .58)} fill={`url(#${id}-body)`} stroke={material.edge} strokeWidth="1.8" />
-
-      {[p.leftShoulder, p.rightShoulder].map((joint, index) => (
-        <circle key={`shoulder-${index}`} cx={joint.x} cy={joint.y} r={arm * .5} fill={`url(#${id}-joint)`} stroke={material.edge} strokeWidth="1.8" />
-      ))}
-
-      {arms.map((part) => <SculptedLimb key={part.name} {...part} id={id} material={material} />)}
+      <path d={torso} fill={`url(#${id}-body)`} stroke={material.edge} strokeWidth="1.25" strokeOpacity=".82" strokeLinejoin="round" />
+      <path d={`M ${shoulderMid.x - shoulderHalf * .72} ${shoulderMid.y + arm * .42}
+        C ${chestCenter.x - chestHalf * .65} ${chestCenter.y - arm * .2}, ${waistCenter.x - waistHalf * .62} ${waistCenter.y - arm * .48}, ${waistCenter.x} ${waistCenter.y - arm * .3}
+        C ${waistCenter.x + waistHalf * .62} ${waistCenter.y - arm * .48}, ${chestCenter.x + chestHalf * .65} ${chestCenter.y - arm * .2}, ${shoulderMid.x + shoulderHalf * .72} ${shoulderMid.y + arm * .42}
+        Q ${shoulderMid.x} ${shoulderMid.y + arm * .02}, ${shoulderMid.x - shoulderHalf * .72} ${shoulderMid.y + arm * .42} Z`} fill={material.light} fillOpacity=".13" />
+      <path d={`M ${chestCenter.x} ${chestCenter.y - arm * .12} C ${waistCenter.x - arm * .12} ${waistCenter.y - arm * .18}, ${hipMid.x - arm * .1} ${hipMid.y - leg * .28}, ${hipMid.x} ${hipMid.y + leg * .28}`} fill="none" stroke="#fff" strokeOpacity=".12" strokeWidth="1.4" strokeLinecap="round" />
+      <path d={`M ${waistCenter.x - waistHalf * .88} ${waistCenter.y + arm * .18}
+        C ${hipMid.x - hipHalf * .76} ${hipMid.y - leg * .36}, ${hipMid.x - hipHalf * .72} ${hipMid.y + leg * .24}, ${hipMid.x - leg * .16} ${groinY - leg * .08}
+        Q ${hipMid.x} ${groinY + leg * .05}, ${hipMid.x + leg * .16} ${groinY - leg * .08}
+        C ${hipMid.x + hipHalf * .72} ${hipMid.y + leg * .24}, ${hipMid.x + hipHalf * .76} ${hipMid.y - leg * .36}, ${waistCenter.x + waistHalf * .88} ${waistCenter.y + arm * .18}
+        Q ${hipMid.x} ${hipMid.y - leg * .12}, ${waistCenter.x - waistHalf * .88} ${waistCenter.y + arm * .18} Z`} fill={material.deep} fillOpacity=".07" />
 
       <g transform={`rotate(${headTilt.toFixed(1)} ${p.head.x} ${p.head.y})`}>
-        <path d={`M ${p.head.x} ${p.head.y - headRadius} C ${p.head.x + headRadius * .72} ${p.head.y - headRadius * .92}, ${p.head.x + headRadius * .86} ${p.head.y - headRadius * .18}, ${p.head.x + headRadius * .69} ${p.head.y + headRadius * .54} C ${p.head.x + headRadius * .5} ${p.head.y + headRadius * .98}, ${p.head.x - headRadius * .5} ${p.head.y + headRadius * .98}, ${p.head.x - headRadius * .69} ${p.head.y + headRadius * .54} C ${p.head.x - headRadius * .86} ${p.head.y - headRadius * .18}, ${p.head.x - headRadius * .72} ${p.head.y - headRadius * .92}, ${p.head.x} ${p.head.y - headRadius} Z`} fill={`url(#${id}-head)`} stroke={material.edge} strokeWidth="2.2" />
-        <path d={`M ${p.head.x - headRadius * .5} ${p.head.y - headRadius * .48} Q ${p.head.x - headRadius * .35} ${p.head.y - headRadius * .72} ${p.head.x - headRadius * .08} ${p.head.y - headRadius * .78}`} fill="none" stroke="#fff" strokeOpacity=".52" strokeWidth="3" strokeLinecap="round" />
-        <path d={`M ${p.head.x} ${p.head.y - headRadius * .82} Q ${p.head.x + gazeX * headRadius * .18} ${p.head.y} ${p.head.x} ${p.head.y + headRadius * .76}`} fill="none" stroke={material.edge} strokeOpacity=".38" strokeWidth="1.4" />
-        <path d={`M ${p.head.x - headRadius * .64} ${p.head.y - headRadius * .06} Q ${p.head.x} ${p.head.y + headRadius * .08} ${p.head.x + headRadius * .64} ${p.head.y - headRadius * .06}`} fill="none" stroke={material.edge} strokeOpacity=".34" strokeWidth="1.4" />
+        <path d={`M ${p.head.x} ${p.head.y - headRadius} C ${p.head.x + headRadius * .68} ${p.head.y - headRadius * .94}, ${p.head.x + headRadius * .8} ${p.head.y - headRadius * .18}, ${p.head.x + headRadius * .64} ${p.head.y + headRadius * .52} C ${p.head.x + headRadius * .43} ${p.head.y + headRadius * .96}, ${p.head.x - headRadius * .43} ${p.head.y + headRadius * .96}, ${p.head.x - headRadius * .64} ${p.head.y + headRadius * .52} C ${p.head.x - headRadius * .8} ${p.head.y - headRadius * .18}, ${p.head.x - headRadius * .68} ${p.head.y - headRadius * .94}, ${p.head.x} ${p.head.y - headRadius} Z`} fill={`url(#${id}-head)`} stroke={material.edge} strokeWidth="1.2" strokeOpacity=".82" />
+        <path d={`M ${p.head.x - headRadius * .46} ${p.head.y - headRadius * .48} Q ${p.head.x - headRadius * .3} ${p.head.y - headRadius * .69} ${p.head.x - headRadius * .06} ${p.head.y - headRadius * .75}`} fill="none" stroke="#fff" strokeOpacity=".2" strokeWidth="2" strokeLinecap="round" />
+        <path d={`M ${p.head.x} ${p.head.y - headRadius * .78} Q ${p.head.x + gazeX * headRadius * .14} ${p.head.y} ${p.head.x} ${p.head.y + headRadius * .72}`} fill="none" stroke={material.edge} strokeOpacity=".18" strokeWidth="1" />
+        <path d={`M ${p.head.x - headRadius * .6} ${p.head.y - headRadius * .06} Q ${p.head.x} ${p.head.y + headRadius * .06} ${p.head.x + headRadius * .6} ${p.head.y - headRadius * .06}`} fill="none" stroke={material.edge} strokeOpacity=".16" strokeWidth="1" />
         {cap && <MannequinCap x={p.head.x} y={p.head.y} radius={headRadius} />}
       </g>
 
@@ -470,30 +456,27 @@ function Figure({
   );
 }
 
-function SculptedLimb({ id, material, name, a, b, startWidth, midWidth, endWidth, joint }: { id: string; material: MaterialPalette; name: string; a: Point2; b: Point2; startWidth: number; midWidth: number; endWidth: number; joint?: Point2 }) {
-  const d = anatomicalSegmentPath(a, b, startWidth, midWidth, endWidth);
-  const dx = b.x - a.x; const dy = b.y - a.y; const length = Math.max(1, Math.hypot(dx, dy));
-  const nx = -dy / length; const ny = dx / length; const mid = pointBetween(a, b, .5);
+function ContinuousLimb({ id, material, name, start, joint, end, startWidth, jointWidth, endWidth, firstBulge, secondBulge }: { id: string; material: MaterialPalette; name: string; start: Point2; joint: Point2; end: Point2; startWidth: number; jointWidth: number; endWidth: number; firstBulge: number; secondBulge: number }) {
+  const firstPath = anatomicalSegmentPath(start, joint, startWidth, firstBulge, jointWidth);
+  const secondPath = anatomicalSegmentPath(joint, end, jointWidth, secondBulge, endWidth);
+  const dx = end.x - start.x; const dy = end.y - start.y; const length = Math.max(1, Math.hypot(dx, dy));
+  const nx = -dy / length; const ny = dx / length; const mid = pointBetween(start, end, .5);
   const gradientId = `${id}-${name}`;
   return (
     <g>
       <defs>
-        <linearGradient id={gradientId} gradientUnits="userSpaceOnUse" x1={mid.x - nx * midWidth * .55} y1={mid.y - ny * midWidth * .55} x2={mid.x + nx * midWidth * .55} y2={mid.y + ny * midWidth * .55}>
-          <stop stopColor={material.deep} />
-          <stop offset=".22" stopColor={material.mid} />
-          <stop offset=".5" stopColor={material.light} />
-          <stop offset=".75" stopColor={material.mid} />
+        <linearGradient id={gradientId} gradientUnits="userSpaceOnUse" x1={mid.x - nx * firstBulge * .55} y1={mid.y - ny * firstBulge * .55} x2={mid.x + nx * firstBulge * .55} y2={mid.y + ny * firstBulge * .55}>
+          <stop stopColor={material.shadow} />
+          <stop offset=".38" stopColor={material.light} />
+          <stop offset=".72" stopColor={material.mid} />
           <stop offset="1" stopColor={material.shadow} />
         </linearGradient>
       </defs>
-      <path d={d} fill={`url(#${gradientId})`} stroke={material.edge} strokeWidth="1.9" strokeLinejoin="round" />
-      <path d={line(pointBetween(a, b, .18), pointBetween(a, b, .76))} stroke="#fff" strokeOpacity=".18" strokeWidth={Math.max(1.2, midWidth * .08)} strokeLinecap="round" transform={`translate(${nx * midWidth * .18} ${ny * midWidth * .18})`} />
-      {joint && (
-        <g>
-          <circle cx={joint.x} cy={joint.y} r={endWidth * .46} fill={`url(#${id}-joint)`} stroke={material.edge} strokeWidth="1.7" />
-          <path d={`M ${joint.x - endWidth * .28} ${joint.y} Q ${joint.x} ${joint.y + endWidth * .16} ${joint.x + endWidth * .28} ${joint.y}`} fill="none" stroke={material.edge} strokeOpacity=".24" strokeWidth="1.2" />
-        </g>
-      )}
+      <path d={firstPath} fill={`url(#${gradientId})`} stroke={material.edge} strokeWidth="1.15" strokeOpacity=".78" strokeLinejoin="round" />
+      <path d={secondPath} fill={`url(#${gradientId})`} stroke={material.edge} strokeWidth="1.15" strokeOpacity=".78" strokeLinejoin="round" />
+      <ellipse cx={joint.x} cy={joint.y} rx={jointWidth * .58} ry={jointWidth * .54} fill={`url(#${gradientId})`} />
+      <path d={line(pointBetween(start, joint, .24), pointBetween(start, joint, .72))} stroke="#fff" strokeOpacity=".08" strokeWidth={Math.max(.8, firstBulge * .04)} strokeLinecap="round" />
+      <path d={line(pointBetween(joint, end, .2), pointBetween(joint, end, .68))} stroke="#fff" strokeOpacity=".07" strokeWidth={Math.max(.8, secondBulge * .04)} strokeLinecap="round" />
     </g>
   );
 }
@@ -501,15 +484,19 @@ function SculptedLimb({ id, material, name, a, b, startWidth, midWidth, endWidth
 function SculptedHand({ point, wrist, size, id, edge }: { point: Point2; wrist: Point2; size: number; id: string; edge: string }) {
   const angle = Math.atan2(point.y - wrist.y, point.x - wrist.x);
   const angleDeg = angle * 180 / Math.PI;
+  const anchor = pointBetween(wrist, point, .4);
   const palmLength = Math.max(18, size * .94);
   const palmWidth = Math.max(12, size * .68);
   return (
-    <g transform={`translate(${point.x} ${point.y}) rotate(${angleDeg})`}>
-      <path d={`M ${-palmLength * .58} ${-palmWidth * .44} Q ${-palmLength * .1} ${-palmWidth * .62} ${palmLength * .28} ${-palmWidth * .34} L ${palmLength * .34} ${palmWidth * .32} Q ${-palmLength * .08} ${palmWidth * .58} ${-palmLength * .58} ${palmWidth * .38} Z`} fill={`url(#${id}-joint)`} stroke={edge} strokeWidth="1.6" />
-      {[-.32, -.1, .12, .34].map((offset, index) => (
-        <path key={offset} d={`M ${palmLength * .18} ${offset * palmWidth} Q ${palmLength * .62} ${offset * palmWidth * 1.05} ${palmLength * (.72 + index * .035)} ${offset * palmWidth * .82}`} fill="none" stroke={`url(#${id}-body)`} strokeWidth={Math.max(3.2, size * .17)} strokeLinecap="round" />
+    <g transform={`translate(${anchor.x} ${anchor.y}) rotate(${angleDeg})`}>
+      <path d={`M ${-palmLength * .76} ${-palmWidth * .3}
+        C ${-palmLength * .22} ${-palmWidth * .48}, ${palmLength * .18} ${-palmWidth * .5}, ${palmLength * .54} ${-palmWidth * .3}
+        Q ${palmLength * .72} 0, ${palmLength * .5} ${palmWidth * .32}
+        C ${palmLength * .12} ${palmWidth * .5}, ${-palmLength * .24} ${palmWidth * .46}, ${-palmLength * .76} ${palmWidth * .27} Z`} fill={`url(#${id}-body)`} stroke={edge} strokeWidth="1.05" strokeOpacity=".78" />
+      {[-.2, .02, .24].map((offset) => (
+        <path key={offset} d={`M ${palmLength * .17} ${offset * palmWidth} Q ${palmLength * .42} ${offset * palmWidth * .95} ${palmLength * .57} ${offset * palmWidth * .78}`} fill="none" stroke={edge} strokeOpacity=".24" strokeWidth=".75" strokeLinecap="round" />
       ))}
-      <path d={`M ${palmLength * .02} ${palmWidth * .32} Q ${palmLength * .34} ${palmWidth * .72} ${palmLength * .5} ${palmWidth * .48}`} fill="none" stroke={`url(#${id}-body)`} strokeWidth={Math.max(3.4, size * .18)} strokeLinecap="round" />
+      <path d={`M ${palmLength * .02} ${palmWidth * .25} Q ${palmLength * .3} ${palmWidth * .56} ${palmLength * .46} ${palmWidth * .34}`} fill="none" stroke={edge} strokeOpacity=".24" strokeWidth=".8" strokeLinecap="round" />
     </g>
   );
 }
@@ -519,8 +506,12 @@ function SculptedFoot({ ankle, foot, width, id, edge }: { ankle: Point2; foot: P
   const length = Math.max(width * .92, Math.hypot(foot.x - ankle.x, foot.y - ankle.y));
   return (
     <g transform={`translate(${ankle.x} ${ankle.y}) rotate(${angle})`}>
-      <path d={`M 0 ${-width * .28} C ${length * .34} ${-width * .38}, ${length * .82} ${-width * .3}, ${length} ${-width * .12} Q ${length * 1.12} 0 ${length} ${width * .24} Q ${length * .36} ${width * .44} 0 ${width * .3} Z`} fill={`url(#${id}-body)`} stroke={edge} strokeWidth="2" />
-      <path d={`M ${length * .52} ${-width * .18} Q ${length * .82} ${-width * .02} ${length * 1.02} ${width * .05}`} fill="none" stroke="#fff" strokeOpacity=".25" strokeWidth="1.6" />
+      <path d={`M ${-width * .03} ${-width * .24}
+        C ${length * .34} ${-width * .31}, ${length * .78} ${-width * .26}, ${length} ${-width * .08}
+        Q ${length * 1.1} ${width * .03}, ${length * .93} ${width * .22}
+        C ${length * .58} ${width * .34}, ${length * .28} ${width * .32}, ${length * .12} ${width * .22}
+        Q ${width * .02} ${width * .12}, ${-width * .03} ${-width * .24} Z`} fill={`url(#${id}-body)`} stroke={edge} strokeWidth="1.15" strokeOpacity=".8" />
+      <path d={`M ${length * .48} ${-width * .13} Q ${length * .76} ${-width * .01} ${length * .96} ${width * .05}`} fill="none" stroke="#fff" strokeOpacity=".12" strokeWidth="1" />
     </g>
   );
 }
@@ -548,6 +539,19 @@ function bendArm(points: Record<BodyPoint, Point2>, side: 'left' | 'right', targ
   points[elbowName] = { x: shoulder.x + dx * .48 + normalX * 32 * bend, y: shoulder.y + dy * .48 + normalY * 32 * bend, depth: shoulder.depth };
   points[wristName] = { x: target.x - dx / length * 13, y: target.y - dy / length * 13, depth: shoulder.depth };
   points[handName] = { x: target.x, y: target.y, depth: shoulder.depth };
+}
+
+function placeArm(
+  points: Record<BodyPoint, Point2>,
+  side: 'left' | 'right',
+  elbow: { x: number; y: number },
+  wrist: { x: number; y: number },
+  hand: { x: number; y: number },
+) {
+  const depth = points[`${side}Shoulder`].depth;
+  points[`${side}Elbow` as BodyPoint] = { ...elbow, depth };
+  points[`${side}Wrist` as BodyPoint] = { ...wrist, depth };
+  points[`${side}Hand` as BodyPoint] = { ...hand, depth };
 }
 
 function placeLeg(points: Record<BodyPoint, Point2>, side: 'left' | 'right', knee: { x: number; y: number }, ankle: { x: number; y: number }, footDirection = 1) {
@@ -656,9 +660,18 @@ function refineIllustration(pose: Pose, skeletons: ProjectedSkeleton[], view: Di
       p.leftHip.x += u * .18; p.rightHip.x += u * .18;
       q.leftHip.x -= u * .18; q.rightHip.x -= u * .18;
       bendArm(p, 'left', { x: p.head.x - u * .28, y: p.head.y - u * 2.35 }, -1);
-      bendArm(p, 'right', { x: p.leftHip.x - u * .42, y: p.leftHip.y + u * 1.18 }, -1);
-      bendArm(q, 'left', { x: q.head.x - u * .08, y: q.head.y - u * .68 }, 1);
-      bendArm(q, 'right', { x: q.head.x + u * .82, y: q.head.y - u * .08 }, -1);
+      placeArm(p, 'right',
+        { x: p.leftHip.x - u * .72, y: p.leftHip.y + u * .28 },
+        { x: p.leftHip.x - u * .68, y: p.leftHip.y + u * .88 },
+        { x: p.leftHip.x - u * .54, y: p.leftHip.y + u * 1.16 });
+      placeArm(q, 'left',
+        { x: q.head.x - u * 1.28, y: q.head.y + u * .18 },
+        { x: q.head.x - u * .45, y: q.head.y - u * .7 },
+        { x: q.head.x - u * .12, y: q.head.y - u * .86 });
+      placeArm(q, 'right',
+        { x: q.head.x + u * 1.42, y: q.head.y + u * .82 },
+        { x: q.head.x + u * .94, y: q.head.y + u * .06 },
+        { x: q.head.x + u * .76, y: q.head.y - u * .08 });
       placeLeg(p, 'left', { x: p.leftHip.x - u * .72, y: p.leftHip.y + u * 1.45 }, { x: p.leftHip.x - u * .58, y: p.leftHip.y + u * 2.82 }, -1);
       placeLeg(q, 'right', { x: q.rightHip.x + u * .75, y: q.rightHip.y + u * 1.55 }, { x: q.rightHip.x + u * 1.18, y: q.rightHip.y + u * 2.8 }, 1);
     }
