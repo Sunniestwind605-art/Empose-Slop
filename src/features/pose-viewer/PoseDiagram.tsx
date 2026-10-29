@@ -29,9 +29,9 @@ type MaterialPalette = {
 };
 
 const palettes: Record<DiagramPalette, MaterialPalette> = {
-  pearl: { light: '#f4f5f5', mid: '#bfc3c4', shadow: '#8c9193', deep: '#5f6568', edge: '#4f5558', accent: '#ff654f' },
-  graphite: { light: '#c8cccd', mid: '#7d8386', shadow: '#50575a', deep: '#303638', edge: '#24292b', accent: '#c9ff64' },
-  'cool-grey': { light: '#eef3f5', mid: '#aebbc0', shadow: '#76868c', deep: '#4c5a60', edge: '#435158', accent: '#6f8f32' },
+  pearl: { light: '#f5f6f6', mid: '#c9cdce', shadow: '#969b9d', deep: '#656b6e', edge: '#34393b', accent: '#ff654f' },
+  graphite: { light: '#777d7f', mid: '#4c5254', shadow: '#34393b', deep: '#202426', edge: '#171a1b', accent: '#c9ff64' },
+  'cool-grey': { light: '#e4ebee', mid: '#acc1ca', shadow: '#7f9aa6', deep: '#58727e', edge: '#29373d', accent: '#6f8f32' },
 };
 
 const add = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
@@ -83,17 +83,17 @@ function buildSkeleton(pose: MannequinPose): Skeleton {
   const torso = child(root, [0, .35, 0], pose.joints.torso);
   const head = child(torso, [0, 1.16, 0], pose.joints.head);
 
-  const leftShoulder = child(torso, [-.45, .86, 0], pose.joints.leftShoulder);
+  const leftShoulder = child(torso, [-.42, .84, 0], pose.joints.leftShoulder);
   const leftElbow = child(leftShoulder, [0, -.57, 0], pose.joints.leftElbow);
   const leftWrist = child(leftElbow, [0, -.51, 0], pose.joints.leftWrist);
-  const rightShoulder = child(torso, [.45, .86, 0], pose.joints.rightShoulder);
+  const rightShoulder = child(torso, [.42, .84, 0], pose.joints.rightShoulder);
   const rightElbow = child(rightShoulder, [0, -.57, 0], pose.joints.rightElbow);
   const rightWrist = child(rightElbow, [0, -.51, 0], pose.joints.rightWrist);
 
-  const leftHip = child(root, [-.18, .14, 0], pose.joints.leftHip);
+  const leftHip = child(root, [-.25, .14, 0], pose.joints.leftHip);
   const leftKnee = child(leftHip, [0, -.79, 0], pose.joints.leftKnee);
   const leftAnkle = child(leftKnee, [0, -.72, 0], pose.joints.leftAnkle);
-  const rightHip = child(root, [.18, .14, 0], pose.joints.rightHip);
+  const rightHip = child(root, [.25, .14, 0], pose.joints.rightHip);
   const rightKnee = child(rightHip, [0, -.79, 0], pose.joints.rightKnee);
   const rightAnkle = child(rightKnee, [0, -.72, 0], pose.joints.rightAnkle);
 
@@ -161,6 +161,32 @@ function projectSkeletons(skeletons: Skeleton[], view: DiagramView, upperFocus: 
   };
 }
 
+function refitProjectedSkeletons(skeletons: ProjectedSkeleton[], upperFocus: boolean) {
+  const focusNames: BodyPoint[] = upperFocus
+    ? ['head', 'neck', 'leftShoulder', 'rightShoulder', 'leftElbow', 'rightElbow', 'leftWrist', 'rightWrist', 'leftHand', 'rightHand', 'leftHip', 'rightHip']
+    : (Object.keys(skeletons[0].points) as BodyPoint[]);
+  const points = skeletons.flatMap((skeleton) => focusNames.map((name) => skeleton.points[name]));
+  const minX = Math.min(...points.map((point) => point.x));
+  const maxX = Math.max(...points.map((point) => point.x));
+  const minY = Math.min(...points.map((point) => point.y));
+  const maxY = Math.max(...points.map((point) => point.y));
+  const width = Math.max(1, maxX - minX);
+  const height = Math.max(1, maxY - minY);
+  const factor = Math.min(1, 470 / width, (upperFocus ? 520 : 570) / height);
+  if (factor >= .995) return 1;
+  const centerX = (minX + maxX) / 2;
+  const centerY = (minY + maxY) / 2;
+  const targetY = upperFocus ? 335 : 355;
+  skeletons.forEach((skeleton) => {
+    (Object.keys(skeleton.points) as BodyPoint[]).forEach((name) => {
+      const point = skeleton.points[name];
+      point.x = 360 + (point.x - centerX) * factor;
+      point.y = targetY + (point.y - centerY) * factor;
+    });
+  });
+  return factor;
+}
+
 const line = (a: Point2, b: Point2) => `M ${a.x.toFixed(1)} ${a.y.toFixed(1)} L ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
 const midpoint = (a: Point2, b: Point2): Point2 => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, depth: (a.depth + b.depth) / 2 });
 
@@ -188,8 +214,10 @@ export function PoseDiagram({
   const activePartner = partnerPose ?? pose.partnerPose;
   if (activePartner) figures.push(buildSkeleton(activePartner));
   const upperFocus = pose.category === 'portrait' || pose.category === 'selfie';
-  const { skeletons, scale } = projectSkeletons(figures, view, upperFocus);
-  refineIllustration(pose, skeletons, view, scale);
+  const projected = projectSkeletons(figures, view, upperFocus);
+  const { skeletons } = projected;
+  refineIllustration(pose, skeletons, view, projected.scale);
+  const scale = projected.scale * refitProjectedSkeletons(skeletons, upperFocus);
   const floor = Math.min(652, Math.max(...skeletons.flatMap((item) => [item.points.leftFoot.y, item.points.rightFoot.y])) + 18);
   const background = pose.category === 'mirror' ? '#dce5e8' : pose.moods.includes('bold') ? '#d5d3d0' : '#e4e2de';
 
@@ -208,7 +236,7 @@ export function PoseDiagram({
           <stop offset="1" stopColor="#c7cbca" />
         </linearGradient>
         <filter id={`${localId}-drop`} x="-30%" y="-30%" width="160%" height="170%">
-          <feDropShadow dx="0" dy="9" stdDeviation="8" floodColor="#252a2c" floodOpacity=".2" />
+          <feDropShadow dx="0" dy="4" stdDeviation="3.5" floodColor="#252a2c" floodOpacity=".18" />
         </filter>
         <marker id={`${localId}-arrow`} markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
           <path d="M0 0 9 4.5 0 9Z" fill="#20211f" />
@@ -231,20 +259,26 @@ export function PoseDiagram({
         {pose.id.includes('floor') && <FloorMat skeleton={skeletons[0]} />}
         {pose.id === 'cafe-cup' && <Cup skeleton={skeletons[0]} />}
         <path d={`M 42 ${floor} Q 360 ${floor - 13} 678 ${floor}`} fill="none" stroke="#20211f" strokeOpacity=".25" strokeWidth="2" />
-        {skeletons.map((skeleton, index) => (
+        {skeletons.map((skeleton, index) => {
+          const figurePalette: DiagramPalette = pose.id === 'reference-arc-duo'
+            ? (index === 0 ? 'graphite' : 'cool-grey')
+            : index === 0 ? palette : palette === 'graphite' ? 'cool-grey' : 'graphite';
+          return (
           <Figure
             key={index}
             skeleton={skeleton}
             scale={scale}
             id={`${localId}-figure-${index}`}
-            material={palettes[index === 0 ? palette : palette === 'graphite' ? 'cool-grey' : 'graphite']}
+            material={palettes[figurePalette]}
             phone={pose.props.includes('phone') && (index === 0 || pose.category === 'selfie')}
+            cap={pose.props.includes('cap') && index === 1}
             guides={showGuides && !compact}
             gazeMarker={`${localId}-gaze`}
             compact={compact}
             view={view}
           />
-        ))}
+          );
+        })}
         {pose.animation && <MotionMarks skeleton={skeletons[0]} marker={`${localId}-arrow`} compact={compact} />}
         {showPhotographer && pose.cameraGuide && !compact && <CameraBlueprint pose={pose} skeleton={skeletons[0]} marker={`${localId}-arrow`} />}
         {showGuides && !compact && <Callouts skeleton={skeletons[0]} upperFocus={upperFocus} />}
@@ -260,21 +294,28 @@ export function PoseDiagram({
   );
 }
 
-function segmentPath(a: Point2, b: Point2, startWidth: number, endWidth: number) {
+function pointBetween(a: Point2, b: Point2, t: number): Point2 {
+  return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t, depth: a.depth + (b.depth - a.depth) * t };
+}
+
+function anatomicalSegmentPath(a: Point2, b: Point2, startWidth: number, midWidth: number, endWidth: number) {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
   const length = Math.max(1, Math.hypot(dx, dy));
   const nx = -dy / length;
   const ny = dx / length;
   const s = { x: nx * startWidth * .5, y: ny * startWidth * .5 };
+  const m = { x: nx * midWidth * .5, y: ny * midWidth * .5 };
   const e = { x: nx * endWidth * .5, y: ny * endWidth * .5 };
-  const c1 = { x: a.x + dx * .36, y: a.y + dy * .36 };
-  const c2 = { x: a.x + dx * .7, y: a.y + dy * .7 };
+  const c1 = { x: a.x + dx * .28, y: a.y + dy * .28 };
+  const c2 = { x: a.x + dx * .62, y: a.y + dy * .62 };
+  const c3 = { x: a.x + dx * .82, y: a.y + dy * .82 };
   return [
     `M ${a.x + s.x} ${a.y + s.y}`,
-    `C ${c1.x + s.x} ${c1.y + s.y} ${c2.x + e.x} ${c2.y + e.y} ${b.x + e.x} ${b.y + e.y}`,
-    `Q ${b.x} ${b.y} ${b.x - e.x} ${b.y - e.y}`,
-    `C ${c2.x - e.x} ${c2.y - e.y} ${c1.x - s.x} ${c1.y - s.y} ${a.x - s.x} ${a.y - s.y}`,
+    `C ${c1.x + m.x} ${c1.y + m.y} ${c2.x + m.x} ${c2.y + m.y} ${c3.x + e.x} ${c3.y + e.y}`,
+    `Q ${b.x + e.x} ${b.y + e.y} ${b.x} ${b.y}`,
+    `Q ${b.x - e.x} ${b.y - e.y} ${c3.x - e.x} ${c3.y - e.y}`,
+    `C ${c2.x - m.x} ${c2.y - m.y} ${c1.x - m.x} ${c1.y - m.y} ${a.x - s.x} ${a.y - s.y}`,
     `Q ${a.x} ${a.y} ${a.x + s.x} ${a.y + s.y} Z`,
   ].join(' ');
 }
@@ -285,6 +326,7 @@ function Figure({
   scale,
   material,
   phone,
+  cap,
   guides,
   gazeMarker,
   compact,
@@ -295,47 +337,60 @@ function Figure({
   scale: number;
   material: MaterialPalette;
   phone: boolean;
+  cap: boolean;
   guides: boolean;
   gazeMarker: string;
   compact: boolean;
   view: DiagramView;
 }) {
   const p = skeleton.points;
-  const arm = Math.max(20, scale * .125);
-  const leg = Math.max(27, scale * .17);
+  const arm = Math.max(25, scale * .155);
+  const leg = Math.max(38, scale * .235);
   const shoulderMid = midpoint(p.leftShoulder, p.rightShoulder);
   const hipMid = midpoint(p.leftHip, p.rightHip);
-  const headRadius = Math.max(27, Math.min(44, scale * .205));
+  const headRadius = Math.max(29, Math.min(46, scale * .215));
   const support = p.leftAnkle.y > p.rightAnkle.y ? p.leftAnkle : p.rightAnkle;
   const headDirection = apply(skeleton.headFrame.matrix, [0, 0, 1]);
   const rawDirection = rawProjection(headDirection, view);
   const gazeX = Math.abs(rawDirection.x) < .08 ? 1 : Math.sign(rawDirection.x);
   const headTilt = Math.atan2(p.rightShoulder.y - p.leftShoulder.y, p.rightShoulder.x - p.leftShoulder.x) * 180 / Math.PI;
-  const torso = `M ${p.leftShoulder.x} ${p.leftShoulder.y}
-    Q ${shoulderMid.x} ${shoulderMid.y - arm * .62} ${p.rightShoulder.x} ${p.rightShoulder.y}
-    Q ${p.rightShoulder.x + arm * .22} ${p.rightShoulder.y + arm * 1.1} ${p.rightHip.x + arm * .28} ${p.rightHip.y - 4}
-    Q ${hipMid.x} ${hipMid.y + arm * .15} ${p.leftHip.x - arm * .28} ${p.leftHip.y - 4}
-    Q ${p.leftShoulder.x - arm * .22} ${p.leftShoulder.y + arm * 1.1} ${p.leftShoulder.x} ${p.leftShoulder.y} Z`;
-  const pelvis = `M ${p.leftHip.x - leg * .28} ${p.leftHip.y - leg * .3}
-    Q ${hipMid.x} ${hipMid.y - leg * .62} ${p.rightHip.x + leg * .28} ${p.rightHip.y - leg * .3}
-    Q ${p.rightHip.x + leg * .5} ${p.rightHip.y + leg * .45} ${hipMid.x} ${hipMid.y + leg * .65}
-    Q ${p.leftHip.x - leg * .5} ${p.leftHip.y + leg * .45} ${p.leftHip.x - leg * .28} ${p.leftHip.y - leg * .3} Z`;
+  const orderedShoulders = [p.leftShoulder, p.rightShoulder].sort((a, b) => a.x - b.x);
+  const orderedHips = [p.leftHip, p.rightHip].sort((a, b) => a.x - b.x);
+  const [leftShoulder, rightShoulder] = orderedShoulders;
+  const [leftHip, rightHip] = orderedHips;
+  const waistCenter = pointBetween(shoulderMid, hipMid, .67);
+  const shoulderHalf = Math.max(arm * 1.45, Math.abs(rightShoulder.x - leftShoulder.x) * .56);
+  const hipHalf = Math.max(leg * .82, Math.abs(rightHip.x - leftHip.x) * .64);
+  const waistHalf = Math.max(arm * .82, Math.min(shoulderHalf * .58, hipHalf * .7));
+  const torso = `M ${shoulderMid.x - shoulderHalf} ${shoulderMid.y + arm * .18}
+    C ${shoulderMid.x - shoulderHalf * 1.05} ${shoulderMid.y + arm * .8}, ${waistCenter.x - waistHalf * 1.15} ${waistCenter.y - arm * .72}, ${waistCenter.x - waistHalf} ${waistCenter.y}
+    C ${waistCenter.x - waistHalf * .94} ${waistCenter.y + arm * .35}, ${hipMid.x - hipHalf * .96} ${hipMid.y - leg * .56}, ${hipMid.x - hipHalf} ${hipMid.y - leg * .28}
+    Q ${hipMid.x} ${hipMid.y + leg * .05} ${hipMid.x + hipHalf} ${hipMid.y - leg * .28}
+    C ${hipMid.x + hipHalf * .96} ${hipMid.y - leg * .56}, ${waistCenter.x + waistHalf * .94} ${waistCenter.y + arm * .35}, ${waistCenter.x + waistHalf} ${waistCenter.y}
+    C ${waistCenter.x + waistHalf * 1.15} ${waistCenter.y - arm * .72}, ${shoulderMid.x + shoulderHalf * 1.05} ${shoulderMid.y + arm * .8}, ${shoulderMid.x + shoulderHalf} ${shoulderMid.y + arm * .18}
+    Q ${shoulderMid.x} ${shoulderMid.y - arm * .58} ${shoulderMid.x - shoulderHalf} ${shoulderMid.y + arm * .18} Z`;
+  const pelvis = `M ${hipMid.x - hipHalf * 1.03} ${hipMid.y - leg * .38}
+    Q ${hipMid.x} ${hipMid.y - leg * .66} ${hipMid.x + hipHalf * 1.03} ${hipMid.y - leg * .38}
+    C ${hipMid.x + hipHalf * 1.16} ${hipMid.y + leg * .18}, ${hipMid.x + hipHalf * .7} ${hipMid.y + leg * .7}, ${hipMid.x} ${hipMid.y + leg * .76}
+    C ${hipMid.x - hipHalf * .7} ${hipMid.y + leg * .7}, ${hipMid.x - hipHalf * 1.16} ${hipMid.y + leg * .18}, ${hipMid.x - hipHalf * 1.03} ${hipMid.y - leg * .38} Z`;
 
-  const limbs: { key: string; a: Point2; b: Point2; aWidth: number; bWidth: number; joint?: Point2 }[] = [
-    { key: 'left-thigh', a: p.leftHip, b: p.leftKnee, aWidth: leg * 1.08, bWidth: leg * .82, joint: p.leftKnee },
-    { key: 'right-thigh', a: p.rightHip, b: p.rightKnee, aWidth: leg * 1.08, bWidth: leg * .82, joint: p.rightKnee },
-    { key: 'left-calf', a: p.leftKnee, b: p.leftAnkle, aWidth: leg * .82, bWidth: leg * .58 },
-    { key: 'right-calf', a: p.rightKnee, b: p.rightAnkle, aWidth: leg * .82, bWidth: leg * .58 },
-    { key: 'left-upper-arm', a: p.leftShoulder, b: p.leftElbow, aWidth: arm * 1.08, bWidth: arm * .78, joint: p.leftElbow },
-    { key: 'right-upper-arm', a: p.rightShoulder, b: p.rightElbow, aWidth: arm * 1.08, bWidth: arm * .78, joint: p.rightElbow },
-    { key: 'left-forearm', a: p.leftElbow, b: p.leftWrist, aWidth: arm * .78, bWidth: arm * .55 },
-    { key: 'right-forearm', a: p.rightElbow, b: p.rightWrist, aWidth: arm * .78, bWidth: arm * .55 },
+  const legs = [
+    { name: 'left-thigh', a: p.leftHip, b: p.leftKnee, startWidth: leg * 1.08, midWidth: leg * 1.18, endWidth: leg * .7, joint: p.leftKnee },
+    { name: 'right-thigh', a: p.rightHip, b: p.rightKnee, startWidth: leg * 1.08, midWidth: leg * 1.18, endWidth: leg * .7, joint: p.rightKnee },
+    { name: 'left-calf', a: p.leftKnee, b: p.leftAnkle, startWidth: leg * .7, midWidth: leg * .9, endWidth: leg * .47 },
+    { name: 'right-calf', a: p.rightKnee, b: p.rightAnkle, startWidth: leg * .7, midWidth: leg * .9, endWidth: leg * .47 },
+  ];
+  const arms = [
+    { name: 'left-upper-arm', a: p.leftShoulder, b: p.leftElbow, startWidth: arm * 1.18, midWidth: arm * 1.08, endWidth: arm * .7, joint: p.leftElbow },
+    { name: 'right-upper-arm', a: p.rightShoulder, b: p.rightElbow, startWidth: arm * 1.18, midWidth: arm * 1.08, endWidth: arm * .7, joint: p.rightElbow },
+    { name: 'left-forearm', a: p.leftElbow, b: p.leftWrist, startWidth: arm * .7, midWidth: arm * .88, endWidth: arm * .48 },
+    { name: 'right-forearm', a: p.rightElbow, b: p.rightWrist, startWidth: arm * .7, midWidth: arm * .88, endWidth: arm * .48 },
   ];
 
   return (
     <g filter={`url(#${id.split('-figure-')[0]}-drop)`}>
       <defs>
-        <linearGradient id={`${id}-body`} x1="0" y1="0" x2="1" y2=".15">
+        <linearGradient id={`${id}-body`} x1="0" y1="0" x2="1" y2=".12">
           <stop offset="0" stopColor={material.shadow} />
           <stop offset=".22" stopColor={material.light} />
           <stop offset=".5" stopColor={material.mid} />
@@ -363,30 +418,32 @@ function Figure({
 
       <ellipse cx={hipMid.x} cy={Math.max(p.leftFoot.y, p.rightFoot.y) + 15} rx={Math.max(40, leg * 2.7)} ry="11" fill="#252a2c" opacity=".2" />
 
-      {limbs.slice(0, 4).map(({ key, ...part }) => <SculptedLimb key={key} {...part} id={id} edge={material.edge} />)}
+      {legs.map((part) => <SculptedLimb key={part.name} {...part} id={id} material={material} />)}
       <SculptedFoot ankle={p.leftAnkle} foot={p.leftFoot} width={leg} id={id} edge={material.edge} />
       <SculptedFoot ankle={p.rightAnkle} foot={p.rightFoot} width={leg} id={id} edge={material.edge} />
 
-      {limbs.slice(4).map(({ key, ...part }) => <SculptedLimb key={key} {...part} id={id} edge={material.edge} />)}
-
       <path d={torso} fill={`url(#${id}-body)`} stroke={material.edge} strokeWidth="2.4" strokeLinejoin="round" />
-      <path d={torso} fill={`url(#${id}-sheen)`} opacity=".7" />
-      <path d={`M ${p.leftShoulder.x + arm * .18} ${p.leftShoulder.y + arm * .42} Q ${shoulderMid.x} ${shoulderMid.y + arm * .1} ${p.rightShoulder.x - arm * .18} ${p.rightShoulder.y + arm * .42}`} fill="none" stroke="#fff" strokeOpacity=".35" strokeWidth="2" strokeLinecap="round" />
-      <path d={`M ${shoulderMid.x} ${shoulderMid.y + arm * .28} Q ${hipMid.x - arm * .18} ${hipMid.y - arm * .38} ${hipMid.x} ${hipMid.y - leg * .25}`} fill="none" stroke={material.edge} strokeOpacity=".18" strokeWidth="2" />
+      <path d={torso} fill={`url(#${id}-sheen)`} opacity=".34" />
+      <path d={`M ${shoulderMid.x - shoulderHalf * .72} ${shoulderMid.y + arm * .55} Q ${shoulderMid.x} ${shoulderMid.y + arm * .12} ${shoulderMid.x + shoulderHalf * .72} ${shoulderMid.y + arm * .55} Q ${shoulderMid.x + waistHalf * .92} ${waistCenter.y - arm * .5} ${waistCenter.x} ${waistCenter.y - arm * .34} Q ${shoulderMid.x - waistHalf * .92} ${waistCenter.y - arm * .5} ${shoulderMid.x - shoulderHalf * .72} ${shoulderMid.y + arm * .55} Z`} fill={material.light} fillOpacity=".2" stroke="#fff" strokeOpacity=".22" strokeWidth="1.4" />
+      <path d={`M ${waistCenter.x - waistHalf * .94} ${waistCenter.y - 2} Q ${waistCenter.x} ${waistCenter.y + arm * .32} ${waistCenter.x + waistHalf * .94} ${waistCenter.y - 2}`} fill="none" stroke={material.edge} strokeOpacity=".32" strokeWidth="2" />
 
       <path d={pelvis} fill={`url(#${id}-joint)`} stroke={material.edge} strokeWidth="2.2" />
-      <path d={`M ${p.leftHip.x - leg * .12} ${p.leftHip.y} Q ${hipMid.x} ${hipMid.y + leg * .28} ${p.rightHip.x + leg * .12} ${p.rightHip.y}`} fill="none" stroke="#fff" strokeOpacity=".28" strokeWidth="2" />
+      <path d={`M ${hipMid.x - hipHalf * .85} ${hipMid.y - leg * .16} Q ${hipMid.x} ${hipMid.y + leg * .38} ${hipMid.x + hipHalf * .85} ${hipMid.y - leg * .16}`} fill="none" stroke="#fff" strokeOpacity=".3" strokeWidth="2" />
 
-      <path d={segmentPath(shoulderMid, p.neck, arm * .65, arm * .55)} fill={`url(#${id}-body)`} stroke={material.edge} strokeWidth="2" />
+      <path d={anatomicalSegmentPath(shoulderMid, p.neck, arm * .72, arm * .68, arm * .58)} fill={`url(#${id}-body)`} stroke={material.edge} strokeWidth="1.8" />
 
       {[p.leftShoulder, p.rightShoulder].map((joint, index) => (
-        <circle key={`shoulder-${index}`} cx={joint.x} cy={joint.y} r={arm * .55} fill={`url(#${id}-joint)`} stroke={material.edge} strokeWidth="2" />
+        <circle key={`shoulder-${index}`} cx={joint.x} cy={joint.y} r={arm * .5} fill={`url(#${id}-joint)`} stroke={material.edge} strokeWidth="1.8" />
       ))}
 
+      {arms.map((part) => <SculptedLimb key={part.name} {...part} id={id} material={material} />)}
+
       <g transform={`rotate(${headTilt.toFixed(1)} ${p.head.x} ${p.head.y})`}>
-        <ellipse cx={p.head.x} cy={p.head.y} rx={headRadius * .78} ry={headRadius} fill={`url(#${id}-head)`} stroke={material.edge} strokeWidth="2.4" />
+        <path d={`M ${p.head.x} ${p.head.y - headRadius} C ${p.head.x + headRadius * .72} ${p.head.y - headRadius * .92}, ${p.head.x + headRadius * .86} ${p.head.y - headRadius * .18}, ${p.head.x + headRadius * .69} ${p.head.y + headRadius * .54} C ${p.head.x + headRadius * .5} ${p.head.y + headRadius * .98}, ${p.head.x - headRadius * .5} ${p.head.y + headRadius * .98}, ${p.head.x - headRadius * .69} ${p.head.y + headRadius * .54} C ${p.head.x - headRadius * .86} ${p.head.y - headRadius * .18}, ${p.head.x - headRadius * .72} ${p.head.y - headRadius * .92}, ${p.head.x} ${p.head.y - headRadius} Z`} fill={`url(#${id}-head)`} stroke={material.edge} strokeWidth="2.2" />
         <path d={`M ${p.head.x - headRadius * .5} ${p.head.y - headRadius * .48} Q ${p.head.x - headRadius * .35} ${p.head.y - headRadius * .72} ${p.head.x - headRadius * .08} ${p.head.y - headRadius * .78}`} fill="none" stroke="#fff" strokeOpacity=".52" strokeWidth="3" strokeLinecap="round" />
-        <path d={`M ${p.head.x + headRadius * .52} ${p.head.y - headRadius * .4} Q ${p.head.x + headRadius * .78} ${p.head.y + headRadius * .12} ${p.head.x + headRadius * .32} ${p.head.y + headRadius * .68}`} fill="none" stroke={material.edge} strokeOpacity=".22" strokeWidth="3" strokeLinecap="round" />
+        <path d={`M ${p.head.x} ${p.head.y - headRadius * .82} Q ${p.head.x + gazeX * headRadius * .18} ${p.head.y} ${p.head.x} ${p.head.y + headRadius * .76}`} fill="none" stroke={material.edge} strokeOpacity=".38" strokeWidth="1.4" />
+        <path d={`M ${p.head.x - headRadius * .64} ${p.head.y - headRadius * .06} Q ${p.head.x} ${p.head.y + headRadius * .08} ${p.head.x + headRadius * .64} ${p.head.y - headRadius * .06}`} fill="none" stroke={material.edge} strokeOpacity=".34" strokeWidth="1.4" />
+        {cap && <MannequinCap x={p.head.x} y={p.head.y} radius={headRadius} />}
       </g>
 
       <SculptedHand point={p.leftHand} wrist={p.leftWrist} size={arm} id={id} edge={material.edge} />
@@ -413,16 +470,28 @@ function Figure({
   );
 }
 
-function SculptedLimb({ id, edge, a, b, aWidth, bWidth, joint }: { id: string; edge: string; a: Point2; b: Point2; aWidth: number; bWidth: number; joint?: Point2 }) {
-  const d = segmentPath(a, b, aWidth, bWidth);
+function SculptedLimb({ id, material, name, a, b, startWidth, midWidth, endWidth, joint }: { id: string; material: MaterialPalette; name: string; a: Point2; b: Point2; startWidth: number; midWidth: number; endWidth: number; joint?: Point2 }) {
+  const d = anatomicalSegmentPath(a, b, startWidth, midWidth, endWidth);
+  const dx = b.x - a.x; const dy = b.y - a.y; const length = Math.max(1, Math.hypot(dx, dy));
+  const nx = -dy / length; const ny = dx / length; const mid = pointBetween(a, b, .5);
+  const gradientId = `${id}-${name}`;
   return (
     <g>
-      <path d={d} fill={`url(#${id}-body)`} stroke={edge} strokeWidth="2.2" strokeLinejoin="round" />
-      <path d={d} fill={`url(#${id}-sheen)`} opacity=".72" />
+      <defs>
+        <linearGradient id={gradientId} gradientUnits="userSpaceOnUse" x1={mid.x - nx * midWidth * .55} y1={mid.y - ny * midWidth * .55} x2={mid.x + nx * midWidth * .55} y2={mid.y + ny * midWidth * .55}>
+          <stop stopColor={material.deep} />
+          <stop offset=".22" stopColor={material.mid} />
+          <stop offset=".5" stopColor={material.light} />
+          <stop offset=".75" stopColor={material.mid} />
+          <stop offset="1" stopColor={material.shadow} />
+        </linearGradient>
+      </defs>
+      <path d={d} fill={`url(#${gradientId})`} stroke={material.edge} strokeWidth="1.9" strokeLinejoin="round" />
+      <path d={line(pointBetween(a, b, .18), pointBetween(a, b, .76))} stroke="#fff" strokeOpacity=".18" strokeWidth={Math.max(1.2, midWidth * .08)} strokeLinecap="round" transform={`translate(${nx * midWidth * .18} ${ny * midWidth * .18})`} />
       {joint && (
         <g>
-          <circle cx={joint.x} cy={joint.y} r={bWidth * .56} fill={`url(#${id}-joint)`} stroke={edge} strokeWidth="2" />
-          <ellipse cx={joint.x - bWidth * .12} cy={joint.y - bWidth * .15} rx={bWidth * .18} ry={bWidth * .1} fill="#fff" opacity=".32" />
+          <circle cx={joint.x} cy={joint.y} r={endWidth * .46} fill={`url(#${id}-joint)`} stroke={material.edge} strokeWidth="1.7" />
+          <path d={`M ${joint.x - endWidth * .28} ${joint.y} Q ${joint.x} ${joint.y + endWidth * .16} ${joint.x + endWidth * .28} ${joint.y}`} fill="none" stroke={material.edge} strokeOpacity=".24" strokeWidth="1.2" />
         </g>
       )}
     </g>
@@ -432,11 +501,11 @@ function SculptedLimb({ id, edge, a, b, aWidth, bWidth, joint }: { id: string; e
 function SculptedHand({ point, wrist, size, id, edge }: { point: Point2; wrist: Point2; size: number; id: string; edge: string }) {
   const angle = Math.atan2(point.y - wrist.y, point.x - wrist.x);
   const angleDeg = angle * 180 / Math.PI;
-  const palmLength = Math.max(14, size * .84);
-  const palmWidth = Math.max(10, size * .62);
+  const palmLength = Math.max(18, size * .94);
+  const palmWidth = Math.max(12, size * .68);
   return (
     <g transform={`translate(${point.x} ${point.y}) rotate(${angleDeg})`}>
-      <ellipse cx={-palmLength * .16} cy="0" rx={palmLength * .52} ry={palmWidth * .52} fill={`url(#${id}-joint)`} stroke={edge} strokeWidth="1.8" />
+      <path d={`M ${-palmLength * .58} ${-palmWidth * .44} Q ${-palmLength * .1} ${-palmWidth * .62} ${palmLength * .28} ${-palmWidth * .34} L ${palmLength * .34} ${palmWidth * .32} Q ${-palmLength * .08} ${palmWidth * .58} ${-palmLength * .58} ${palmWidth * .38} Z`} fill={`url(#${id}-joint)`} stroke={edge} strokeWidth="1.6" />
       {[-.32, -.1, .12, .34].map((offset, index) => (
         <path key={offset} d={`M ${palmLength * .18} ${offset * palmWidth} Q ${palmLength * .62} ${offset * palmWidth * 1.05} ${palmLength * (.72 + index * .035)} ${offset * palmWidth * .82}`} fill="none" stroke={`url(#${id}-body)`} strokeWidth={Math.max(3.2, size * .17)} strokeLinecap="round" />
       ))}
@@ -446,12 +515,22 @@ function SculptedHand({ point, wrist, size, id, edge }: { point: Point2; wrist: 
 }
 
 function SculptedFoot({ ankle, foot, width, id, edge }: { ankle: Point2; foot: Point2; width: number; id: string; edge: string }) {
-  const d = segmentPath(ankle, foot, width * .56, width * .78);
+  const angle = Math.atan2(foot.y - ankle.y, foot.x - ankle.x) * 180 / Math.PI;
+  const length = Math.max(width * .92, Math.hypot(foot.x - ankle.x, foot.y - ankle.y));
+  return (
+    <g transform={`translate(${ankle.x} ${ankle.y}) rotate(${angle})`}>
+      <path d={`M 0 ${-width * .28} C ${length * .34} ${-width * .38}, ${length * .82} ${-width * .3}, ${length} ${-width * .12} Q ${length * 1.12} 0 ${length} ${width * .24} Q ${length * .36} ${width * .44} 0 ${width * .3} Z`} fill={`url(#${id}-body)`} stroke={edge} strokeWidth="2" />
+      <path d={`M ${length * .52} ${-width * .18} Q ${length * .82} ${-width * .02} ${length * 1.02} ${width * .05}`} fill="none" stroke="#fff" strokeOpacity=".25" strokeWidth="1.6" />
+    </g>
+  );
+}
+
+function MannequinCap({ x, y, radius }: { x: number; y: number; radius: number }) {
   return (
     <g>
-      <path d={d} fill={`url(#${id}-body)`} stroke={edge} strokeWidth="2.2" />
-      <ellipse cx={foot.x} cy={foot.y} rx={width * .5} ry={width * .28} fill={`url(#${id}-joint)`} stroke={edge} strokeWidth="1.8" />
-      <path d={line(ankle, foot)} stroke="#fff" strokeOpacity=".28" strokeWidth="2" strokeLinecap="round" />
+      <path d={`M ${x - radius * .65} ${y - radius * .3} Q ${x - radius * .38} ${y - radius * 1.02} ${x + radius * .48} ${y - radius * .78} Q ${x + radius * .73} ${y - radius * .55} ${x + radius * .64} ${y - radius * .22} Z`} fill="#2879a7" stroke="#1f2c34" strokeWidth="2" />
+      <path d={`M ${x + radius * .18} ${y - radius * .3} Q ${x + radius * .78} ${y - radius * .22} ${x + radius * 1.02} ${y - radius * .02} Q ${x + radius * .62} ${y + radius * .08} ${x + radius * .12} ${y - radius * .04} Z`} fill="#173f85" stroke="#1f2c34" strokeWidth="2" />
+      <path d={`M ${x - radius * .48} ${y - radius * .52} Q ${x - radius * .1} ${y - radius * .72} ${x + radius * .34} ${y - radius * .62}`} fill="none" stroke="#7bc0e2" strokeOpacity=".65" strokeWidth="2" />
     </g>
   );
 }
@@ -564,8 +643,11 @@ function refineIllustration(pose: Pose, skeletons: ProjectedSkeleton[], view: Di
     const centerX = (p.root.x + q.root.x) / 2;
     const handY = Math.max(p.leftHip.y, q.rightHip.y) - u * .25;
     if (pose.id === 'reference-arc-duo') {
-      const pShift = centerX - u * 1.12 - p.root.x;
-      const qShift = centerX + u * 1.02 - q.root.x;
+      // Keep the pair touching at the hips without letting the front figure
+      // swallow the rear silhouette. The reference reads as two complete
+      // mannequins first and an overlapping couple second.
+      const pShift = centerX - u * 1.62 - p.root.x;
+      const qShift = centerX + u * 1.48 - q.root.x;
       (Object.keys(p) as BodyPoint[]).forEach((name) => { p[name].x += pShift; });
       (Object.keys(q) as BodyPoint[]).forEach((name) => { q[name].x += qShift; });
       (['head', 'neck', 'leftShoulder', 'rightShoulder'] as BodyPoint[]).forEach((name) => { p[name].x -= u * .28; q[name].x += u * .22; });
@@ -573,10 +655,11 @@ function refineIllustration(pose: Pose, skeletons: ProjectedSkeleton[], view: Di
       q.head.x += u * .2;
       p.leftHip.x += u * .18; p.rightHip.x += u * .18;
       q.leftHip.x -= u * .18; q.rightHip.x -= u * .18;
-      bendArm(p, 'left', { x: p.head.x - u * .32, y: Math.max(72, p.head.y - u * 1.05) }, -1);
-      bendArm(p, 'right', { x: p.rightHip.x - u * .18, y: p.rightHip.y + u * 1.2 }, 1);
+      bendArm(p, 'left', { x: p.head.x - u * .28, y: p.head.y - u * 2.35 }, -1);
+      bendArm(p, 'right', { x: p.leftHip.x - u * .42, y: p.leftHip.y + u * 1.18 }, -1);
       bendArm(q, 'left', { x: q.head.x - u * .08, y: q.head.y - u * .68 }, 1);
       bendArm(q, 'right', { x: q.head.x + u * .82, y: q.head.y - u * .08 }, -1);
+      placeLeg(p, 'left', { x: p.leftHip.x - u * .72, y: p.leftHip.y + u * 1.45 }, { x: p.leftHip.x - u * .58, y: p.leftHip.y + u * 2.82 }, -1);
       placeLeg(q, 'right', { x: q.rightHip.x + u * .75, y: q.rightHip.y + u * 1.55 }, { x: q.rightHip.x + u * 1.18, y: q.rightHip.y + u * 2.8 }, 1);
     }
     if (['side-sync', 'connected-walk', 'handhold-pause', 'playful-counterbalance', 'walkaway-glance'].includes(pose.id)) {
