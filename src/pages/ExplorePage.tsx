@@ -6,7 +6,13 @@ import { framingOptions, modeOptions, moodOptions, movementOptions, subjectOptio
 import { poseStats, poses } from '../data/poses';
 import { filterPoses, type LibraryFilters } from '../features/recommendations/engine';
 
-const emptyFilters: LibraryFilters = { subject: '', mood: '', movement: '', framing: '', mode: '', difficulty: '' };
+const emptyFilters: LibraryFilters = { collection: '', subject: '', mood: '', movement: '', framing: '', mode: '', difficulty: '' };
+const collections = [
+  { value: '', label: 'All collections', count: poseStats.total },
+  { value: 'essentials', label: 'Essentials', count: poseStats.collections.essentials },
+  { value: 'editorial', label: 'Editorial', count: poseStats.collections.editorial },
+  { value: 'romantic', label: 'Romantic', count: poseStats.collections.romantic },
+];
 
 export function ExplorePage() {
   const [search, setSearch] = useState('');
@@ -27,7 +33,10 @@ export function ExplorePage() {
 
   return (
     <div className="page section-wrap explore-page">
-      <PageIntro eyebrow="Pose library" title="A useful idea for every kind of frame." copy={`${poseStats.total} original pose guides, including ${poseStats.animated} animated sequences. Search the cues, not somebody else's photos.`} />
+      <PageIntro eyebrow="Pose library" title="A useful idea for every kind of frame." copy={`${poseStats.total} original pose guides organized into Essentials, Editorial and Romantic collections. Every guide is available offline after the first visit.`} />
+      <nav className="collection-tabs" aria-label="Pose collections">
+        {collections.map((collection) => <button key={collection.value || 'all'} className={filters.collection === collection.value ? 'active' : ''} onClick={() => setFilter('collection', collection.value)}><span>{collection.label}</span><strong>{collection.count}</strong></button>)}
+      </nav>
       <div className="library-toolbar">
         <label className="search-box"><Search size={19} /><span className="sr-only">Search poses</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search: hands, walk, editorial…" />{search && <button onClick={() => setSearch('')} aria-label="Clear search"><X size={16} /></button>}</label>
         <button className={`button filter-button ${activeFilters ? 'active' : ''}`} onClick={() => setShowFilters((value) => !value)} aria-expanded={showFilters}><SlidersHorizontal size={18} /> Filters {activeFilters > 0 && <span>{activeFilters}</span>}</button>
@@ -35,6 +44,7 @@ export function ExplorePage() {
       </div>
       {showFilters && (
         <div className="filter-panel">
+          <Filter label="Collection" value={filters.collection} options={collections.slice(1)} onChange={(value) => setFilter('collection', value)} />
           <Filter label="Subject" value={filters.subject} options={subjectOptions} onChange={(value) => setFilter('subject', value)} />
           <Filter label="Mood" value={filters.mood} options={moodOptions} onChange={(value) => setFilter('mood', value)} />
           <Filter label="Movement" value={filters.movement} options={movementOptions} onChange={(value) => setFilter('movement', value)} />

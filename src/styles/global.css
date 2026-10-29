@@ -146,6 +146,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .pose-card-body { padding: 20px; }
 .eyebrow-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .eyebrow-row span, .tag-row span { padding: 5px 8px; border: 1px solid var(--line); border-radius: 999px; color: #65675f; font-size: .62rem; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; }
+.eyebrow-row .collection-badge { background: #e8e2d7; color: var(--ink); }
+.eyebrow-row .collection-badge.editorial { background: #dfe9eb; }
+.eyebrow-row .collection-badge.romantic { background: #f7deda; }
 .eyebrow-row span:last-child { background: #eeeadf; }
 .pose-card h3 { margin: 15px 0 8px; font-family: var(--display); font-size: 1.65rem; line-height: 1.05; font-weight: 500; letter-spacing: -.025em; }
 .pose-card h3 a:hover { color: var(--coral); }
@@ -219,6 +222,13 @@ select { min-height: 42px; padding: 0 34px 0 12px; border: 1px solid var(--line)
 .question-actions > span { text-align: center; color: var(--muted); font-size: .73rem; }
 
 .results-toolbar, .library-toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 26px; }
+.collection-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: -18px 0 26px; }
+.collection-tabs button { display: flex; align-items: center; justify-content: space-between; min-height: 58px; padding: 0 17px; border: 1px solid var(--line); border-radius: 15px; background: var(--paper); color: var(--ink); font: inherit; cursor: pointer; transition: transform .2s ease, background .2s ease, border-color .2s ease; }
+.collection-tabs button:hover { transform: translateY(-2px); border-color: var(--ink); }
+.collection-tabs button.active { border-color: var(--ink); background: var(--ink); color: white; }
+.collection-tabs span { font-size: .78rem; font-weight: 850; }
+.collection-tabs strong { display: grid; place-items: center; min-width: 28px; height: 28px; border-radius: 999px; background: rgba(255,255,255,.55); color: var(--ink); font-size: .68rem; }
+.collection-tabs button.active strong { background: var(--lime); }
 .results-toolbar > label { margin-left: auto; font-size: .75rem; font-weight: 800; }
 .view-toggle { display: flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
 .view-toggle button { width: 42px; height: 42px; border: 0; border-right: 1px solid var(--line); background: var(--paper); cursor: pointer; }
@@ -401,6 +411,7 @@ select { min-height: 42px; padding: 0 34px 0 12px; border: 1px solid var(--line)
   .page-intro { grid-template-columns: 1fr; gap: 24px; margin-bottom: 36px; }
   .page-intro h1 { font-size: clamp(3.1rem, 14vw, 5rem); }
   .page-intro-aside { justify-self: start; }
+  .collection-tabs { grid-template-columns: 1fr 1fr; margin-top: -14px; }
   .questionnaire-head { grid-template-columns: 1fr auto; }
   .questionnaire-head .progress-track { grid-column: 1 / -1; grid-row: 2; }
   .questionnaire-head > .text-action { grid-column: 2; grid-row: 1; }

@@ -5,8 +5,10 @@ import { filterPoses, recommendPoses, scorePose } from '../features/recommendati
 
 describe('pose library', () => {
   it('contains the complete authored artwork library with unique identifiers', () => {
-    expect(poses).toHaveLength(44);
+    expect(poses).toHaveLength(64);
     expect(new Set(poses.map((pose) => pose.id)).size).toBe(poses.length);
+    expect(new Set(poses.map((pose) => pose.collection))).toEqual(new Set(['essentials', 'editorial', 'romantic']));
+    expect(poses.filter((pose) => pose.collection === 'romantic')).toHaveLength(20);
     poses.forEach((pose) => {
       expect(pose.artwork).toMatch(/^pose-guides\/.+\.jpg$/);
       expect(pose.instructions.length).toBeGreaterThanOrEqual(4);
@@ -49,7 +51,7 @@ describe('recommendation engine', () => {
   });
 
   it('supports combined search and filters', () => {
-    const results = filterPoses(poses, 'phone', { subject: '', mood: '', movement: '', framing: '', mode: 'photographer', difficulty: '' });
+    const results = filterPoses(poses, 'phone', { collection: '', subject: '', mood: '', movement: '', framing: '', mode: 'photographer', difficulty: '' });
     expect(results.length).toBeGreaterThan(0);
     expect(results.every((pose) => pose.modes.includes('photographer'))).toBe(true);
   });

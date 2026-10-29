@@ -218,9 +218,10 @@ export function PoseDiagram({
         viewBox="0 0 1254 1254"
         role="img"
         aria-label={`Authored articulated mannequin study of ${pose.title}`}
-        preserveAspectRatio="xMidYMid slice"
+        preserveAspectRatio="xMidYMid meet"
       >
-        <image href={artworkUrl} width="1254" height="1254" preserveAspectRatio="xMidYMid slice" />
+        <rect width="1254" height="1254" fill="#e9e4da" />
+        <image href={artworkUrl} width="1254" height="1254" preserveAspectRatio="xMidYMid meet" />
       </svg>
     );
   }

@@ -12,7 +12,7 @@ export function PoseCard({ pose, reason, compact = false }: { pose: Pose; reason
     <article className={`pose-card ${compact ? 'compact' : ''}`}>
       <Link to={`/pose/${pose.id}`} className="pose-card-visual"><PoseGlyph pose={pose} compact={compact} /></Link>
       <div className="pose-card-body">
-        <div className="eyebrow-row"><span>{pose.category}</span><span>{pose.difficulty}</span>{pose.animation && <span>motion</span>}</div>
+        <div className="eyebrow-row"><span className={`collection-badge ${pose.collection}`}>{pose.collection}</span><span>{pose.category}</span><span>{pose.difficulty}</span>{pose.animation && <span>motion</span>}</div>
         <h3><Link to={`/pose/${pose.id}`}>{pose.title}</Link></h3>
         <p>{pose.description}</p>
         {reason && <p className="recommendation-reason"><Spark /> {reason}</p>}

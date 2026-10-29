@@ -21,7 +21,7 @@ export function PoseDetailPage() {
     <div className="page section-wrap detail-page">
       <button className="text-action detail-back" onClick={() => navigate(-1)}><ArrowLeft size={16} /> Back to previous view</button>
       <header className="detail-header">
-        <div><span className="kicker">{pose.category} direction</span><h1>{pose.title}</h1><p>{pose.description}</p><div className="tag-row">{pose.moods.map((mood) => <span key={mood}>{mood}</span>)}<span>{pose.difficulty}</span><span>{pose.animation ? 'dynamic' : 'still'}</span></div></div>
+        <div><span className="kicker">{pose.collection} collection · {pose.category} direction</span><h1>{pose.title}</h1><p>{pose.description}</p><div className="tag-row"><span>{pose.collection}</span>{pose.moods.map((mood) => <span key={mood}>{mood}</span>)}<span>{pose.difficulty}</span><span>{pose.animation ? 'dynamic' : 'still'}</span></div></div>
         <div className="detail-actions">
           <button className={`button secondary ${saved ? 'active' : ''}`} onClick={() => toggleFavourite(pose.id)}><Heart size={18} fill={saved ? 'currentColor' : 'none'} /> {saved ? 'Saved' : 'Favourite'}</button>
           <button className={`button secondary ${planned ? 'active' : ''}`} onClick={() => addToSession(pose.id)}>{planned ? <Check size={18} /> : <BookmarkPlus size={18} />} {planned ? 'In shoot plan' : 'Add to plan'}</button>

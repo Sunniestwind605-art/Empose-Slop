@@ -102,6 +102,7 @@ export function recommendPoses(
 }
 
 export type LibraryFilters = {
+  collection: string;
   subject: string;
   mood: string;
   movement: string;
@@ -115,6 +116,7 @@ export function filterPoses(poses: Pose[], search: string, filters: LibraryFilte
   return poses.filter((pose) => {
     const haystack = [pose.title, pose.description, ...pose.tags, ...pose.styles].join(' ').toLowerCase();
     return (!query || haystack.includes(query))
+      && (!filters.collection || pose.collection === filters.collection)
       && (!filters.subject || pose.subjects.includes(filters.subject as never))
       && (!filters.mood || pose.moods.includes(filters.mood as never))
       && (!filters.movement || pose.movement === filters.movement)
