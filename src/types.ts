@@ -17,7 +17,7 @@ export type HelpArea =
 export type Expressiveness = 'subtle' | 'natural' | 'expressive' | 'dramatic';
 export type Movement = 'static' | 'micro' | 'walking' | 'energetic';
 export type Difficulty = 'easy' | 'moderate' | 'experimental';
-export type PoseCollection = 'essentials' | 'editorial' | 'romantic' | 'masculine' | 'feminine';
+export type PoseCollection = 'essentials' | 'editorial' | 'romantic' | 'masculine' | 'feminine' | 'low-angle';
 
 export type Vec3 = [number, number, number];
 export type JointName =
@@ -42,7 +42,7 @@ export type PoseKeyframe = {
 
 export type CameraGuide = {
   angle: 'straight-on' | 'slight-left' | 'slight-right' | 'profile';
-  height: 'eye' | 'chest' | 'waist' | 'slightly-high';
+  height: 'ground' | 'eye' | 'chest' | 'waist' | 'slightly-high';
   distance: 'close' | 'medium' | 'far';
   composition: string;
 };

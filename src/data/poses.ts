@@ -149,6 +149,86 @@ const locationsFor = (category: Pose['category']): Location[] => {
   return ['studio', 'urban', 'nature', 'architecture', 'beach', 'anywhere'];
 };
 
+const lowAngleSlugs = [
+  'low-angle-01-lens-reaching-frame', 'low-angle-02-upward-sky-portrait', 'low-angle-03-staircase-recline',
+  'low-angle-04-ground-level-duo', 'low-angle-05-overhead-forward-fold', 'low-angle-06-forehead-shield',
+  'low-angle-07-overhead-pocket-stance', 'low-angle-08-forward-road-step', 'low-angle-09-worms-eye-neck-study',
+  'low-angle-10-towering-hip-portrait', 'low-angle-11-human-frame', 'low-angle-12-forward-hands-back',
+  'low-angle-13-towering-shoe-stance', 'low-angle-14-hand-on-chest', 'low-angle-15-fisheye-crouch-reach',
+  'low-angle-16-palm-block-duo', 'low-angle-17-crouched-face-cover', 'low-angle-18-towering-calm-portrait',
+  'low-angle-19-neck-and-shoulder', 'low-angle-20-double-hip-hold', 'low-angle-21-overhead-arms-back',
+  'low-angle-22-face-cup-diagonal', 'low-angle-23-raised-knee-portrait', 'low-angle-24-overhead-cheek-fold',
+  'low-angle-25-overhead-palm-reach', 'low-angle-26-diagonal-ground-recline', 'low-angle-27-worms-eye-torso',
+  'low-angle-28-raised-knee-stance', 'low-angle-29-open-arms-hero', 'low-angle-30-calm-towering-portrait',
+  'low-angle-31-seated-forward-sole', 'low-angle-32-railing-hands', 'low-angle-33-beam-balance',
+  'low-angle-34-dominant-hand-reach', 'low-angle-35-quiet-torso-portrait', 'low-angle-36-airborne-soles',
+  'low-angle-37-crouch-palm-shield', 'low-angle-38-hand-on-knee', 'low-angle-39-side-glance-torso',
+  'low-angle-40-staircase-recline', 'low-angle-41-eye-ring-gesture', 'low-angle-42-overhead-standing',
+  'low-angle-43-airborne-duo', 'low-angle-44-ground-sit-braced', 'low-angle-45-overhead-stretch',
+  'low-angle-46-forward-leg-stance', 'low-angle-47-hand-on-hip', 'low-angle-48-open-palm-block',
+  'low-angle-49-wide-pocket-stance', 'low-angle-50-heroic-side-gaze', 'low-angle-51-waist-twist',
+  'low-angle-52-airborne-stride', 'low-angle-53-raised-arm-arc', 'low-angle-54-double-sole-jump',
+  'low-angle-55-overhead-hands-back', 'low-angle-56-seated-sole-forward', 'low-angle-57-giant-forward-foot',
+  'low-angle-58-crouch-hand-reach', 'low-angle-59-ledge-forward-lean', 'low-angle-60-forward-sole-balance',
+  'low-angle-61-crouched-fist-forward', 'low-angle-62-block-seat-soles', 'low-angle-63-shoulder-touch-stance',
+  'low-angle-64-beam-wide-stance', 'low-angle-65-chin-up-closeup', 'low-angle-66-open-palm-worms-eye',
+  'low-angle-67-crawl-hand-reach', 'low-angle-68-overhead-hands-hips', 'low-angle-69-double-palm-frame',
+  'low-angle-70-overhead-arms-behind', 'low-angle-71-forward-shoe-step', 'low-angle-72-airborne-double-sole',
+  'low-angle-73-raised-knee-arms-up', 'low-angle-74-pocket-street-stance', 'low-angle-75-monumental-wide-stance',
+  'low-angle-76-hand-behind-head', 'low-angle-77-neck-shoulder-portrait', 'low-angle-78-downward-reading-gesture',
+] as const;
+
+const lowAngleTitle = (slug: string) => slug
+  .replace(/^low-angle-\d+-/, '')
+  .replace('worms-eye', "worm's-eye")
+  .split('-')
+  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ');
+
+const lowAngleCategory = (slug: string): Pose['category'] => {
+  if (/(duo|human-frame)/.test(slug)) return 'couple';
+  if (/(seated|sit|recline|crouch|crawl|block-seat)/.test(slug)) return 'seated';
+  if (/(portrait|torso|neck|chin|cheek|face|shoulder|eye-ring|hand-on-chest)/.test(slug)) return 'portrait';
+  return 'standing';
+};
+
+const lowAngleCue = (slug: string, category: Pose['category']) => {
+  if (/(airborne|jump|stride)/.test(slug)) return 'Launch through the frame above a ground-level camera, keeping the bent and extended limbs separated so the airborne silhouette stays readable.';
+  if (slug.includes('overhead')) return 'Place the camera high above the subject and preserve the steep top-down taper from the nearest joint to the smallest, farthest foot.';
+  if (/(palm|hand-reach|lens-reaching|human-frame)/.test(slug)) return 'Send the nearest articulated hand toward the lens while the torso and legs recede sharply, preserving the intentional foreground-to-background scale change.';
+  if (/(sole|shoe|foot)/.test(slug)) return 'Set the camera at floor level and project the nearest foot toward it, keeping the supporting leg long and the upper body compact behind the sole.';
+  if (category === 'couple') return 'Arrange both figures on clearly different depth planes around a very low camera, leaving enough negative space for every limb and contact point to read.';
+  if (category === 'seated') return 'Build the pose from a secure seated or crouched base, then angle the knees, torso and head through the exaggerated perspective of the camera.';
+  if (category === 'portrait') return 'Let the low viewpoint lengthen the neck and torso, then refine the head tilt and shoulder line without flattening the foreshortening.';
+  return 'Place the camera close to the floor and build the stance upward from the nearest foot, keeping the pelvis, ribcage and head on a clean perspective line.';
+};
+
+const lowAngleSeeds: SeedPose[] = lowAngleSlugs.map((slug, index) => {
+  const category = lowAngleCategory(slug);
+  const pair = category === 'couple';
+  const handLed = /(palm|hand|frame|reach|arms|fist|gesture)/.test(slug);
+  return {
+    id: slug,
+    title: lowAngleTitle(slug),
+    artwork: `pose-guides/${slug}.jpg`,
+    collection: 'low-angle',
+    category,
+    moods: index % 3 === 0 ? ['bold', 'artistic'] : ['editorial', 'confident'],
+    cue: lowAngleCue(slug, category),
+    hands: handLed
+      ? 'Keep every visible finger separated and preserve the exact wrist angle; the nearest hand should read as a deliberate foreground shape.'
+      : 'Keep the hands quiet but fully articulated, with clear wrist breaks and enough space between fingers, torso and thighs.',
+    gaze: slug.includes('overhead')
+      ? 'Lift the whole feature line toward the overhead lens without collapsing the back of the neck.'
+      : 'Aim the feature line toward the low lens while preserving the source head tilt and neck extension.',
+    difficulty: 'experimental',
+    expressiveness: 'dramatic',
+    framing: category === 'portrait' ? ['close-up', 'head-shoulders', 'waist-up'] : ['full-body', 'environmental'],
+    locations: ['studio', 'urban', 'architecture', 'anywhere'],
+    ...(pair ? { subjects: ['pair'] as PoseSubject[] } : {}),
+  };
+});
+
 const seeds: SeedPose[] = [
   { id: 'lens-frame-duo', title: 'Lens-Frame Duo', artwork: 'pose-guides/lens-frame-duo.jpg', category: 'couple', moods: ['bold', 'artistic'], cue: 'Stand shoulder-to-shoulder beneath a high wide-angle camera and reach both open hands toward opposite sides of the lens.', hands: 'Spread every finger and keep a clear window between the palms so both heads remain visible.', gaze: 'Tip both faces upward into the gap between the hands.', difficulty: 'experimental', expressiveness: 'dramatic', framing: ['full-body', 'environmental'], locations: ['nature', 'urban', 'anywhere'] },
   { id: 'fence-levels-duo', title: 'Fence Levels', artwork: 'pose-guides/fence-levels-duo.jpg', category: 'couple', moods: ['cool', 'editorial'], cue: 'Build two strong levels: one person standing behind the rail and one seated securely on top.', hands: 'Let the standing wrists drape over the rail while the seated person joins the hands softly between the knees.', gaze: 'Lift both chins slightly above the camera for a calm, distant attitude.', difficulty: 'moderate', expressiveness: 'natural', framing: ['full-body', 'environmental'], locations: ['urban', 'architecture'] },
@@ -256,11 +336,7 @@ const seeds: SeedPose[] = [
   { id: 'feminine-18-airborne-baton', title: 'Airborne Baton', artwork: 'pose-guides/feminine-18-airborne-baton.jpg', collection: 'feminine', category: 'standing', subjects: ['feminine'], moods: ['sporty', 'bold'], cue: 'Leap diagonally through the frame with one leg reaching long and the other knee folding behind the body.', hands: 'Sweep one arm outward for balance and lift the baton high in the opposite hand.', gaze: 'Turn the head along the direction of travel.', movement: 'energetic', difficulty: 'experimental', expressiveness: 'dramatic', framing: ['full-body', 'environmental'], locations: ['studio', 'urban', 'anywhere'], prop: 'baton' },
   { id: 'feminine-19-high-angle-folded-arms', title: 'High-Angle Folded Arms', artwork: 'pose-guides/feminine-19-high-angle-folded-arms.jpg', collection: 'feminine', category: 'standing', subjects: ['feminine'], moods: ['soft', 'mysterious'], cue: 'Stand with the feet close beneath a steep overhead camera and soften the body into a subtle curve.', hands: 'Cross both forearms over the torso and hold the opposite upper arms gently.', gaze: 'Lift the feature line into the lens while keeping the shoulders relaxed.', difficulty: 'easy', framing: ['full-body', 'environmental'], locations: ['studio', 'anywhere'] },
   { id: 'feminine-20-forward-open-hand', title: 'Forward Open Hand', artwork: 'pose-guides/feminine-20-forward-open-hand.jpg', collection: 'feminine', category: 'standing', subjects: ['feminine'], moods: ['bold', 'editorial'], cue: 'Bend the torso forward beneath a high camera with the knees relaxed and the hips shifted slightly behind the heels.', hands: 'Brace one hand behind the hip and open the opposite palm beside the face toward the lens.', gaze: 'Look upward past the spread fingers.', difficulty: 'moderate', expressiveness: 'expressive', framing: ['full-body', 'environmental'], locations: ['studio', 'anywhere'] },
-
-
-
-
-
+  ...lowAngleSeeds,
 ];
 
 export const poses: Pose[] = seeds.map((seed, index) => {
@@ -318,7 +394,7 @@ export const poses: Pose[] = seeds.map((seed, index) => {
     selfieTip: isSelfie ? `${seed.hands} Keep the lens clean, use soft light, and check the full edge of the frame before shooting.` : undefined,
     cameraGuide: isSelfie ? undefined : {
       angle: index % 4 === 0 ? 'slight-left' : index % 4 === 1 ? 'slight-right' : index % 4 === 2 ? 'straight-on' : 'profile',
-      height: seed.category === 'standing' ? 'waist' : seed.category === 'seated' ? 'chest' : 'eye',
+      height: collection === 'low-angle' ? 'ground' : seed.category === 'standing' ? 'waist' : seed.category === 'seated' ? 'chest' : 'eye',
       distance: seed.category === 'portrait' ? 'close' : seed.category === 'couple' ? 'far' : 'medium',
       composition: `Keep the ${seed.category === 'couple' ? 'pair' : 'subject'} slightly off-centre and preserve the body lines created by the pose.`,
     },
@@ -339,6 +415,7 @@ export const poseStats = {
     romantic: poses.filter((pose) => pose.collection === 'romantic').length,
     masculine: poses.filter((pose) => pose.collection === 'masculine').length,
     feminine: poses.filter((pose) => pose.collection === 'feminine').length,
+    lowAngle: poses.filter((pose) => pose.collection === 'low-angle').length,
   },
   mirror: poses.filter((pose) => pose.category === 'mirror').length,
   selfie: poses.filter((pose) => pose.category === 'selfie').length,

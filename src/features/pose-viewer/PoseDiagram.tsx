@@ -778,7 +778,7 @@ function CameraBlueprint({ pose, skeleton, marker }: { pose: Pose; skeleton: Pro
   const target = midpoint(skeleton.points.leftShoulder, skeleton.points.rightHip);
   const guide = pose.cameraGuide!;
   const cameraX = guide.angle === 'slight-left' ? 75 : guide.angle === 'slight-right' ? 645 : guide.angle === 'profile' ? 650 : 95;
-  const cameraY = guide.height === 'waist' ? 445 : guide.height === 'chest' ? 350 : guide.height === 'slightly-high' ? 155 : 235;
+  const cameraY = guide.height === 'ground' ? 540 : guide.height === 'waist' ? 445 : guide.height === 'chest' ? 350 : guide.height === 'slightly-high' ? 155 : 235;
   return (
     <g>
       <path d={`M ${cameraX} ${cameraY} L ${target.x} ${target.y}`} stroke="#ff654f" strokeWidth="3" strokeDasharray="10 8" markerEnd={`url(#${marker})`} />

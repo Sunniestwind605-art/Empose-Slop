@@ -14,6 +14,7 @@ const collections = [
   { value: 'romantic', label: 'Romantic', count: poseStats.collections.romantic },
   { value: 'masculine', label: 'Masculine full body', count: poseStats.collections.masculine },
   { value: 'feminine', label: 'Feminine full body', count: poseStats.collections.feminine },
+  { value: 'low-angle', label: 'Low-angle portraits', count: poseStats.collections.lowAngle },
 ];
 
 export function ExplorePage() {
@@ -35,7 +36,7 @@ export function ExplorePage() {
 
   return (
     <div className="page section-wrap explore-page">
-      <PageIntro eyebrow="Pose library" title="A useful idea for every kind of frame." copy={`${poseStats.total} original pose guides organized into Essentials, Editorial, Romantic, Masculine full-body and Feminine full-body collections. Every guide is available offline after the first visit.`} />
+      <PageIntro eyebrow="Pose library" title="A useful idea for every kind of frame." copy={`${poseStats.total} original pose guides organized into Essentials, Editorial, Romantic, Masculine full-body, Feminine full-body and Low-angle portrait collections. Every guide is available offline after the first visit.`} />
       <nav className="collection-tabs" aria-label="Pose collections">
         {collections.map((collection) => <button key={collection.value || 'all'} className={filters.collection === collection.value ? 'active' : ''} onClick={() => setFilter('collection', collection.value)}><span>{collection.label}</span><strong>{collection.count}</strong></button>)}
       </nav>

@@ -247,7 +247,7 @@ function PhotographerGuide({ guide }: { guide: CameraGuide }) {
   const distance = guide.distance === 'far' ? 3.1 : guide.distance === 'medium' ? 2.4 : 1.8;
   const x = guide.angle === 'slight-left' ? -1 : guide.angle === 'slight-right' ? 1 : guide.angle === 'profile' ? 2.4 : 0;
   const z = guide.angle === 'profile' ? .2 : distance;
-  const y = guide.height === 'waist' ? -.35 : guide.height === 'chest' ? .15 : .6;
+  const y = guide.height === 'ground' ? -.95 : guide.height === 'waist' ? -.35 : guide.height === 'chest' ? .15 : .6;
   return (
     <group position={[x, -.7, z]}>
       <mesh position={[0, .75, 0]}><capsuleGeometry args={[.16, .6, 8, 16]} /><meshStandardMaterial color="#66706d" transparent opacity={.72} /></mesh>
