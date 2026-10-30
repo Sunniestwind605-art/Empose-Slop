@@ -5,10 +5,11 @@ import { filterPoses, recommendPoses, scorePose } from '../features/recommendati
 
 describe('pose library', () => {
   it('contains the complete authored artwork library with unique identifiers', () => {
-    expect(poses).toHaveLength(64);
+    expect(poses).toHaveLength(84);
     expect(new Set(poses.map((pose) => pose.id)).size).toBe(poses.length);
-    expect(new Set(poses.map((pose) => pose.collection))).toEqual(new Set(['essentials', 'editorial', 'romantic']));
+    expect(new Set(poses.map((pose) => pose.collection))).toEqual(new Set(['essentials', 'editorial', 'romantic', 'masculine']));
     expect(poses.filter((pose) => pose.collection === 'romantic')).toHaveLength(20);
+    expect(poses.filter((pose) => pose.collection === 'masculine')).toHaveLength(20);
     poses.forEach((pose) => {
       expect(pose.artwork).toMatch(/^pose-guides\/.+\.jpg$/);
       expect(pose.instructions.length).toBeGreaterThanOrEqual(4);

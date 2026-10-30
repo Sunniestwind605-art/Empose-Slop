@@ -1,4 +1,4 @@
-const CACHE_NAME = 'posepilot-romantic-v1';
+const CACHE_NAME = 'posepilot-masculine-v1';
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const withBase = (path = '') => new URL(`${BASE_PATH}${path}`, self.location.origin).href;
 
@@ -39,6 +39,26 @@ const POSE_ASSETS = [
   'pose-guides/ledge-perspective.jpg',
   'pose-guides/lens-frame-duo.jpg',
   'pose-guides/low-angle-duo.jpg',
+  'pose-guides/masculine-01-hip-set-look-away.jpg',
+  'pose-guides/masculine-02-board-balance.jpg',
+  'pose-guides/masculine-03-side-back-pocket.jpg',
+  'pose-guides/masculine-04-diagonal-float.jpg',
+  'pose-guides/masculine-05-asymmetrical-sway.jpg',
+  'pose-guides/masculine-06-book-stack.jpg',
+  'pose-guides/masculine-07-briefcase-flight.jpg',
+  'pose-guides/masculine-08-trench-pocket-turn.jpg',
+  'pose-guides/masculine-09-double-hip-brace.jpg',
+  'pose-guides/masculine-10-low-angle-counterlean.jpg',
+  'pose-guides/masculine-11-leaned-back-gaze.jpg',
+  'pose-guides/masculine-12-hand-behind-neck.jpg',
+  'pose-guides/masculine-13-one-hand-breakdance.jpg',
+  'pose-guides/masculine-14-forward-hover-step.jpg',
+  'pose-guides/masculine-15-point-and-guard.jpg',
+  'pose-guides/masculine-16-pocketed-collar-slouch.jpg',
+  'pose-guides/masculine-17-bag-drop-stance.jpg',
+  'pose-guides/masculine-18-phone-walk.jpg',
+  'pose-guides/masculine-19-chair-thinker.jpg',
+  'pose-guides/masculine-20-neck-touch-portrait.jpg',
   'pose-guides/offset-stance.jpg',
   'pose-guides/pocket-angle.jpg',
   'pose-guides/power-square.jpg',
