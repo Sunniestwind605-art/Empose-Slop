@@ -1,4 +1,4 @@
-const CACHE_NAME = 'posepilot-low-angle-v1';
+const CACHE_NAME = 'posepilot-feminine-extended-v1';
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const withBase = (path = '') => new URL(`${BASE_PATH}${path}`, self.location.origin).href;
 
@@ -137,6 +137,26 @@ const POSE_ASSETS = [
   'pose-guides/feminine-18-airborne-baton.jpg',
   'pose-guides/feminine-19-high-angle-folded-arms.jpg',
   'pose-guides/feminine-20-forward-open-hand.jpg',
+  'pose-guides/feminine-21-kneeling-forward-reach.jpg',
+  'pose-guides/feminine-22-rear-hip-glance.jpg',
+  'pose-guides/feminine-23-worms-eye-waist-brace.jpg',
+  'pose-guides/feminine-24-wide-action-stance.jpg',
+  'pose-guides/feminine-25-curled-leg-twist.jpg',
+  'pose-guides/feminine-26-overhead-arms-behind.jpg',
+  'pose-guides/feminine-27-low-angle-forward-fold.jpg',
+  'pose-guides/feminine-28-mouth-and-hip-portrait.jpg',
+  'pose-guides/feminine-29-seated-leg-thrust.jpg',
+  'pose-guides/feminine-30-rear-dance-reach.jpg',
+  'pose-guides/feminine-31-stair-recline.jpg',
+  'pose-guides/feminine-32-curved-one-leg-balance.jpg',
+  'pose-guides/feminine-33-crouched-cheek-call.jpg',
+  'pose-guides/feminine-34-pocket-backlean.jpg',
+  'pose-guides/feminine-35-ballet-diagonal.jpg',
+  'pose-guides/feminine-36-crossed-knee-crown.jpg',
+  'pose-guides/feminine-37-low-angle-hand-drop.jpg',
+  'pose-guides/feminine-38-overhead-ground-twist.jpg',
+  'pose-guides/feminine-39-raised-knee-ball-arc.jpg',
+  'pose-guides/feminine-40-seated-foreground-shoe.jpg',
   'pose-guides/masculine-01-hip-set-look-away.jpg',
   'pose-guides/masculine-02-board-balance.jpg',
   'pose-guides/masculine-03-side-back-pocket.jpg',
