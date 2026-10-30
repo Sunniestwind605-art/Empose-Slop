@@ -1,4 +1,4 @@
-const CACHE_NAME = 'posepilot-masculine-v1';
+const CACHE_NAME = 'posepilot-feminine-v1';
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const withBase = (path = '') => new URL(`${BASE_PATH}${path}`, self.location.origin).href;
 
@@ -39,6 +39,26 @@ const POSE_ASSETS = [
   'pose-guides/ledge-perspective.jpg',
   'pose-guides/lens-frame-duo.jpg',
   'pose-guides/low-angle-duo.jpg',
+  'pose-guides/feminine-01-deep-squat-rest.jpg',
+  'pose-guides/feminine-02-overhead-s-curve.jpg',
+  'pose-guides/feminine-03-dual-lens-frame.jpg',
+  'pose-guides/feminine-04-crouched-lens-frame.jpg',
+  'pose-guides/feminine-05-overhead-hand-frame.jpg',
+  'pose-guides/feminine-06-flip-phone-fold.jpg',
+  'pose-guides/feminine-07-vertical-kick.jpg',
+  'pose-guides/feminine-08-reclined-sole-first.jpg',
+  'pose-guides/feminine-09-hands-behind-crown.jpg',
+  'pose-guides/feminine-10-chair-handset.jpg',
+  'pose-guides/feminine-11-wide-counterlean.jpg',
+  'pose-guides/feminine-12-overhead-pocket-curve.jpg',
+  'pose-guides/feminine-13-single-leg-backbend.jpg',
+  'pose-guides/feminine-14-knee-bent-backlean.jpg',
+  'pose-guides/feminine-15-hip-braced-tilt.jpg',
+  'pose-guides/feminine-16-overhead-palm-block.jpg',
+  'pose-guides/feminine-17-cube-perch.jpg',
+  'pose-guides/feminine-18-airborne-baton.jpg',
+  'pose-guides/feminine-19-high-angle-folded-arms.jpg',
+  'pose-guides/feminine-20-forward-open-hand.jpg',
   'pose-guides/masculine-01-hip-set-look-away.jpg',
   'pose-guides/masculine-02-board-balance.jpg',
   'pose-guides/masculine-03-side-back-pocket.jpg',

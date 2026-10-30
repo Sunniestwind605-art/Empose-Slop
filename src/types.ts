@@ -17,7 +17,7 @@ export type HelpArea =
 export type Expressiveness = 'subtle' | 'natural' | 'expressive' | 'dramatic';
 export type Movement = 'static' | 'micro' | 'walking' | 'energetic';
 export type Difficulty = 'easy' | 'moderate' | 'experimental';
-export type PoseCollection = 'essentials' | 'editorial' | 'romantic' | 'masculine';
+export type PoseCollection = 'essentials' | 'editorial' | 'romantic' | 'masculine' | 'feminine';
 
 export type Vec3 = [number, number, number];
 export type JointName =
