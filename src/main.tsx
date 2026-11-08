@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@fontsource/allura';
+import '@fontsource-variable/cormorant-garamond/wght-italic.css';
 import '@fontsource-variable/cormorant-garamond/wght.css';
 import '@fontsource-variable/space-grotesk/wght.css';
 import '@fontsource-variable/syne/wght.css';

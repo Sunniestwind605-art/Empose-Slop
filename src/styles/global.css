@@ -492,6 +492,149 @@ body.romantic-mode {
   .romantic-mode .pose-card-visual { margin: 7px 7px 0; }
 }
 
+/* Masculine collection — nocturnal cinematic archive */
+body.masculine-mode {
+  --ink: #f0eee7;
+  --petrol: #0a0b0b;
+  --petrol-bright: #161817;
+  --muted: #aaa79e;
+  --ivory: #0a0b0b;
+  --paper: #141515;
+  --coral: #ff6544;
+  --lime: #ff6544;
+  --lavender: #ff6544;
+  --line: rgba(240, 238, 231, .25);
+  --soft-line: rgba(240, 238, 231, .12);
+  --shadow: 0 24px 70px rgba(0, 0, 0, .56);
+  --display: "Cormorant Garamond Variable", Georgia, serif;
+  --archive: "Space Grotesk Variable", Consolas, ui-monospace, monospace;
+  color: var(--ink);
+  background-color: #0a0b0b;
+  background-image:
+    radial-gradient(circle at 52% -8%, rgba(240, 238, 231, .09), transparent 28%),
+    radial-gradient(circle, rgba(240, 238, 231, .055) 0 1px, transparent 1.4px);
+  background-size: auto, 7px 7px;
+}
+
+.masculine-mode .site-header {
+  background: rgba(8, 9, 9, .94);
+  border-bottom-color: rgba(240, 238, 231, .2);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, .35);
+}
+.masculine-mode .nav-link { color: #a8a59d; }
+.masculine-mode .nav-link:hover,
+.masculine-mode .nav-link.active { background: #f0eee7; color: #0a0b0b; box-shadow: none; }
+.masculine-mode .session-link,
+.masculine-mode .favourite-link { border-color: rgba(240, 238, 231, .3); }
+.masculine-mode .session-link span,
+.masculine-mode .favourite-link span { background: #ff6544; color: #0a0b0b; }
+.masculine-mode .brand-mark svg rect { fill: #f0eee7; }
+.masculine-mode .brand-mark svg circle { fill: #ff6544; }
+.masculine-mode .brand-mark svg path { fill: #0a0b0b; }
+.masculine-mode .brand-mark > span { color: #f0eee7; font-family: var(--archive); font-size: .98rem; font-weight: 700; letter-spacing: -.045em; text-transform: uppercase; }
+.masculine-mode .site-footer { color: #f0eee7; }
+.masculine-mode .mobile-bottom-nav { background: rgba(8, 9, 9, .97); border-top-color: rgba(240, 238, 231, .2); }
+
+.masculine-mode .page-intro { position: relative; border-bottom: 1px solid rgba(240, 238, 231, .35); }
+.masculine-mode .page-intro::before {
+  content: "02";
+  position: absolute;
+  right: 0;
+  top: -18px;
+  color: rgba(240, 238, 231, .08);
+  font-family: var(--archive);
+  font-size: clamp(7rem, 15vw, 14rem);
+  font-weight: 700;
+  line-height: 1;
+}
+.masculine-mode .page-intro > div { position: relative; z-index: 1; }
+.masculine-mode .page-intro h1,
+.masculine-mode .detail-header h1 {
+  font-family: "Cormorant Garamond Variable", Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -.055em;
+  line-height: .82;
+  text-transform: uppercase;
+}
+.masculine-mode .page-intro h1 { max-width: 920px; font-size: clamp(4.5rem, 8vw, 8.2rem); }
+.masculine-mode .page-intro p { max-width: 780px; color: #bbb8af; font-family: var(--archive); font-size: .82rem; letter-spacing: .02em; text-transform: uppercase; }
+.masculine-mode .kicker { color: #ff6544; font-family: var(--archive); letter-spacing: .2em; }
+.masculine-masthead { display: grid; grid-template-columns: 1fr auto 1fr; gap: 22px; margin: -28px 0 46px; padding: 14px 0; border-top: 1px solid rgba(240, 238, 231, .35); border-bottom: 1px solid rgba(240, 238, 231, .35); color: #a9a69e; font-family: var(--archive); font-size: .64rem; font-weight: 650; letter-spacing: .11em; }
+.masculine-masthead span:nth-child(2) { color: #f0eee7; text-align: center; }
+.masculine-masthead span:last-child { text-align: right; }
+
+.masculine-mode .collection-tabs button,
+.masculine-mode .search-box,
+.masculine-mode select,
+.masculine-mode .filter-panel { background: #111312; color: #f0eee7; }
+.masculine-mode .collection-tabs button { min-height: 54px; border-radius: 0; border-color: rgba(240, 238, 231, .28); font-family: var(--archive); text-transform: uppercase; }
+.masculine-mode .collection-tabs button:hover { border-color: #ff6544; }
+.masculine-mode .collection-tabs button.active { border-color: #ff6544; background: #ff6544; color: #0a0b0b; }
+.masculine-mode .collection-tabs strong { background: #292b2a; color: #f0eee7; }
+.masculine-mode .collection-tabs button.active strong { background: #0a0b0b; color: #f0eee7; }
+.masculine-mode .search-box { border-radius: 0; }
+.masculine-mode .search-box input { color: #f0eee7; }
+.masculine-mode .search-box input::placeholder { color: #777a76; }
+.masculine-mode .filter-button span { background: #ff6544; color: #0a0b0b; }
+.masculine-mode .active-filter-row { font-family: var(--archive); text-transform: uppercase; }
+.masculine-mode .active-filter-row button { border-radius: 0; background: #1a1c1b; }
+
+.masculine-mode .pose-card {
+  border-color: rgba(240, 238, 231, .28);
+  border-radius: 0;
+  background: #111312;
+  box-shadow: none;
+}
+.masculine-mode .pose-card:hover { border-color: rgba(255, 101, 68, .85); box-shadow: 0 22px 55px rgba(0, 0, 0, .5); }
+.masculine-mode .pose-card-visual { border-bottom: 1px solid rgba(240, 238, 231, .24); background: #090a0a; }
+.masculine-mode .pose-card-visual .pose-glyph { filter: grayscale(1) contrast(1.14) brightness(.78); }
+.masculine-mode .pose-card-body { padding: 18px; }
+.masculine-mode .pose-card h3 { font-family: "Cormorant Garamond Variable", Georgia, serif; font-size: 2.05rem; font-style: italic; font-weight: 500; letter-spacing: -.035em; line-height: .95; text-transform: uppercase; }
+.masculine-mode .pose-card h3 a:hover,
+.masculine-mode .pose-card-actions .text-action { color: #ff6544; }
+.masculine-mode .pose-card-body > p { color: #a9a69e; }
+.masculine-mode .eyebrow-row span,
+.masculine-mode .tag-row span { border: 0; border-right: 1px solid rgba(240, 238, 231, .25); border-radius: 0; padding: 2px 8px 2px 0; color: #96938c; font-family: var(--archive); }
+.masculine-mode .eyebrow-row .collection-badge.masculine,
+.masculine-mode .eyebrow-row span:last-child { background: transparent; color: #ff6544; }
+.masculine-mode .pose-card-actions { border-top-color: rgba(240, 238, 231, .16); }
+.masculine-mode .icon-button { border-radius: 0; background: #171918; }
+.masculine-mode .icon-button:hover,
+.masculine-mode .icon-button.active,
+.masculine-mode .heart-button.active { border-color: #ff6544; background: #ff6544; color: #0a0b0b; }
+
+.masculine-mode .detail-header { border-bottom: 1px solid rgba(240, 238, 231, .28); padding-bottom: 34px; }
+.masculine-mode .detail-header h1 { font-size: clamp(4.5rem, 8vw, 8.5rem); }
+.masculine-mode .detail-viewer,
+.masculine-mode .detail-instructions { border-radius: 0; border-color: rgba(240, 238, 231, .3); }
+.masculine-mode .detail-viewer img { filter: grayscale(1) contrast(1.12) brightness(.84); }
+.masculine-mode .detail-instructions { background: #111312; }
+.masculine-mode .instruction-heading,
+.masculine-mode .detail-instructions li,
+.masculine-mode .pose-card-actions { border-color: rgba(240, 238, 231, .18); }
+.masculine-mode .instruction-heading,
+.masculine-mode .detail-instructions li span,
+.masculine-mode .coaching-grid span { font-family: var(--archive); }
+.masculine-mode .coaching-grid article { border: 1px solid rgba(240, 238, 231, .18); border-radius: 0; background: #191b1a; }
+.masculine-mode .director-note { border-left-color: #ff6544; background: #050606; }
+.masculine-mode .director-note p { color: #aaa79e; }
+.masculine-mode .director-note strong,
+.masculine-mode .section-heading h2 { font-family: "Cormorant Garamond Variable", Georgia, serif; font-style: italic; text-transform: uppercase; }
+.masculine-mode .camera-spec,
+.masculine-mode .button.primary,
+.masculine-mode .detail-actions .active { border-color: #ff6544; background: #ff6544; color: #0a0b0b; }
+.masculine-mode .button.secondary { border-radius: 0; background: #151716; }
+.masculine-mode .photographer-toggle.active { border-color: #ff6544; background: #ff6544; color: #0a0b0b; }
+
+@media (max-width: 760px) {
+  .masculine-mode .page-intro h1 { font-size: clamp(4rem, 18vw, 6.4rem); }
+  .masculine-mode .page-intro::before { top: 12px; font-size: 7rem; }
+  .masculine-masthead { grid-template-columns: 1fr 1fr; gap: 9px; margin-top: -22px; }
+  .masculine-masthead span:nth-child(2) { grid-column: 1 / -1; grid-row: 2; text-align: left; }
+  .masculine-masthead span:last-child { text-align: right; }
+}
+
 @media (max-width: 1100px) {
   .section-wrap { width: min(100% - 40px, 1000px); }
   .desktop-nav { display: none; }
