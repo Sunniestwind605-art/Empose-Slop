@@ -1,5 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import '@fontsource-variable/space-grotesk/wght.css';
+import '@fontsource-variable/syne/wght.css';
 import App from './App';
 import './styles/global.css';
 
