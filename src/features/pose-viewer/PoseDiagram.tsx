@@ -29,9 +29,9 @@ type MaterialPalette = {
 };
 
 const palettes: Record<DiagramPalette, MaterialPalette> = {
-  pearl: { light: '#ebeae7', mid: '#cbc9c5', shadow: '#aaa9a4', deep: '#8a8a85', edge: '#6d6e6a', accent: '#ff654f' },
-  graphite: { light: '#777977', mid: '#626461', shadow: '#50524f', deep: '#414340', edge: '#343633', accent: '#c9ff64' },
-  'cool-grey': { light: '#dce4e5', mid: '#bdcbce', shadow: '#9babad', deep: '#7f9194', edge: '#637477', accent: '#6f8f32' },
+  pearl: { light: '#eef7f8', mid: '#cbdde0', shadow: '#a8c1c6', deep: '#7f9da3', edge: '#4f6f77', accent: '#c8ff1a' },
+  graphite: { light: '#6f858a', mid: '#526c72', shadow: '#3c565c', deep: '#27454b', edge: '#15383f', accent: '#c8ff1a' },
+  'cool-grey': { light: '#dcebed', mid: '#bad1d5', shadow: '#94b1b7', deep: '#718f96', edge: '#506f76', accent: '#0b6574' },
 };
 
 const add = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
@@ -220,7 +220,7 @@ export function PoseDiagram({
         aria-label={`Authored articulated mannequin study of ${pose.title}`}
         preserveAspectRatio="xMidYMid meet"
       >
-        <rect width="1254" height="1254" fill="#e9e4da" />
+        <rect width="1254" height="1254" fill="#e2f0f2" />
         <image href={artworkUrl} width="1254" height="1254" preserveAspectRatio="xMidYMid meet" />
       </svg>
     );
@@ -234,7 +234,7 @@ export function PoseDiagram({
   refineIllustration(pose, skeletons, view, projected.scale);
   const scale = projected.scale * refitProjectedSkeletons(skeletons, upperFocus);
   const floor = Math.min(652, Math.max(...skeletons.flatMap((item) => [item.points.leftFoot.y, item.points.rightFoot.y])) + 18);
-  const background = pose.category === 'mirror' ? '#dce5e8' : pose.moods.includes('bold') ? '#d5d3d0' : '#e4e2de';
+  const background = pose.category === 'mirror' ? '#d8ebee' : pose.moods.includes('bold') ? '#cfE4e7' : '#e2f0f2';
 
   return (
     <svg
@@ -247,24 +247,24 @@ export function PoseDiagram({
       <defs>
         <linearGradient id={`${localId}-paper`} x1="0" y1="0" x2="1" y2="1">
           <stop stopColor={background} />
-          <stop offset=".56" stopColor={pose.moods.includes('soft') ? '#f2f1ef' : '#d9dcdb'} />
-          <stop offset="1" stopColor="#c7cbca" />
+          <stop offset=".56" stopColor={pose.moods.includes('soft') ? '#f2fafb' : '#d8e9ec'} />
+          <stop offset="1" stopColor="#c5dde1" />
         </linearGradient>
         <filter id={`${localId}-drop`} x="-30%" y="-30%" width="160%" height="170%">
           <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#252a2c" floodOpacity=".12" />
         </filter>
         <marker id={`${localId}-arrow`} markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
-          <path d="M0 0 9 4.5 0 9Z" fill="#20211f" />
+          <path d="M0 0 9 4.5 0 9Z" fill="#06343d" />
         </marker>
         <marker id={`${localId}-gaze`} markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
-          <path d="M0 0 9 4.5 0 9Z" fill="#6f8f32" />
+          <path d="M0 0 9 4.5 0 9Z" fill="#0b6574" />
         </marker>
         <clipPath id={`${localId}-clip`}><rect x="0" y="0" width="720" height="700" rx={compact ? 26 : 0} /></clipPath>
       </defs>
       <g clipPath={`url(#${localId}-clip)`}>
         <rect width="720" height="700" fill={`url(#${localId}-paper)`} />
         {!compact && (
-          <g stroke="#20211f" strokeOpacity=".07" strokeWidth="1">
+          <g stroke="#06343d" strokeOpacity=".07" strokeWidth="1">
             {[120, 240, 360, 480, 600].map((x) => <path key={`x-${x}`} d={`M${x} 0V700`} />)}
             {[100, 200, 300, 400, 500, 600].map((y) => <path key={`y-${y}`} d={`M0 ${y}H720`} />)}
           </g>
@@ -273,7 +273,7 @@ export function PoseDiagram({
         {pose.category === 'seated' && !pose.id.includes('floor') && <Seat skeleton={skeletons[0]} floor={floor} variant={pose.id} />}
         {pose.id.includes('floor') && <FloorMat skeleton={skeletons[0]} />}
         {pose.id === 'cafe-cup' && <Cup skeleton={skeletons[0]} />}
-        <path d={`M 42 ${floor} Q 360 ${floor - 13} 678 ${floor}`} fill="none" stroke="#20211f" strokeOpacity=".25" strokeWidth="2" />
+        <path d={`M 42 ${floor} Q 360 ${floor - 13} 678 ${floor}`} fill="none" stroke="#06343d" strokeOpacity=".25" strokeWidth="2" />
         {skeletons.map((skeleton, index) => {
           const figurePalette: DiagramPalette = pose.id === 'reference-arc-duo'
             ? (index === 0 ? 'graphite' : 'cool-grey')
@@ -299,9 +299,9 @@ export function PoseDiagram({
         {showGuides && !compact && <Callouts skeleton={skeletons[0]} upperFocus={upperFocus} />}
         {!compact && (
           <g transform="translate(22 22)">
-            <rect width="172" height="35" rx="17.5" fill="#fbf8f2" fillOpacity=".88" stroke="#20211f" strokeOpacity=".16" />
-            <circle cx="18" cy="17.5" r="5" fill="#ff654f" />
-            <text x="31" y="22" fill="#20211f" fontSize="12" fontWeight="800" letterSpacing="1.2">{upperFocus ? 'WAIST-UP STUDY' : 'FULL-BODY STUDY'}</text>
+            <rect width="172" height="35" rx="17.5" fill="#fbfeff" fillOpacity=".9" stroke="#06343d" strokeOpacity=".16" />
+            <circle cx="18" cy="17.5" r="5" fill="#c8ff1a" />
+            <text x="31" y="22" fill="#06343d" fontSize="12" fontWeight="800" letterSpacing="1.2">{upperFocus ? 'WAIST-UP STUDY' : 'FULL-BODY STUDY'}</text>
           </g>
         )}
       </g>
@@ -463,8 +463,8 @@ function Figure({
               <circle cx={p[name].x} cy={p[name].y} r="2" fill={material.edge} />
             </g>
           ))}
-          <path d={`M ${hipMid.x} ${hipMid.y - 8} L ${support.x} ${support.y - 16}`} stroke="#ff654f" strokeWidth="4" strokeDasharray="7 7" />
-          <path d={`M ${support.x - 12} ${support.y - 16} h 24`} stroke="#ff654f" strokeWidth="5" strokeLinecap="round" />
+          <path d={`M ${hipMid.x} ${hipMid.y - 8} L ${support.x} ${support.y - 16}`} stroke="#c8ff1a" strokeWidth="4" strokeDasharray="7 7" />
+          <path d={`M ${support.x - 12} ${support.y - 16} h 24`} stroke="#c8ff1a" strokeWidth="5" strokeLinecap="round" />
         </g>
       )}
     </g>
@@ -709,7 +709,7 @@ function Phone({ hand, wrist }: { hand: Point2; wrist: Point2 }) {
   return (
     <g transform={`translate(${hand.x} ${hand.y}) rotate(${angle + 90})`}>
       <rect x="-14" y="-24" width="28" height="48" rx="5" fill="#242522" stroke="#f7f4ed" strokeWidth="2" />
-      <circle cx="7" cy="-17" r="3" fill="#c9ff64" />
+      <circle cx="7" cy="-17" r="3" fill="#c8ff1a" />
       <path d="M-5 18h10" stroke="#f7f4ed" strokeWidth="2" strokeLinecap="round" />
     </g>
   );
@@ -718,9 +718,9 @@ function Phone({ hand, wrist }: { hand: Point2; wrist: Point2 }) {
 function MirrorFrame() {
   return (
     <g>
-      <rect x="52" y="37" width="616" height="616" rx="20" fill="#f7fbfc" fillOpacity=".28" stroke="#20211f" strokeOpacity=".33" strokeWidth="5" />
+      <rect x="52" y="37" width="616" height="616" rx="20" fill="#f2fafb" fillOpacity=".32" stroke="#06343d" strokeOpacity=".33" strokeWidth="5" />
       <path d="M77 75 152 0M530 700l138-138" stroke="#fff" strokeOpacity=".55" strokeWidth="13" />
-      <path d="M90 44v602M630 44v602" stroke="#20211f" strokeOpacity=".08" strokeWidth="2" />
+      <path d="M90 44v602M630 44v602" stroke="#06343d" strokeOpacity=".08" strokeWidth="2" />
     </g>
   );
 }
@@ -750,15 +750,15 @@ function Seat({ skeleton, floor, variant }: { skeleton: ProjectedSkeleton; floor
 
 function FloorMat({ skeleton }: { skeleton: ProjectedSkeleton }) {
   const hip = midpoint(skeleton.points.leftHip, skeleton.points.rightHip);
-  return <ellipse cx={hip.x} cy={Math.max(skeleton.points.leftFoot.y, skeleton.points.rightFoot.y) + 10} rx="190" ry="28" fill="#ff654f" fillOpacity=".13" stroke="#ff654f" strokeOpacity=".35" strokeWidth="3" strokeDasharray="10 8" />;
+  return <ellipse cx={hip.x} cy={Math.max(skeleton.points.leftFoot.y, skeleton.points.rightFoot.y) + 10} rx="190" ry="28" fill="#c8ff1a" fillOpacity=".18" stroke="#0b6574" strokeOpacity=".48" strokeWidth="3" strokeDasharray="10 8" />;
 }
 
 function Cup({ skeleton }: { skeleton: ProjectedSkeleton }) {
   const hand = midpoint(skeleton.points.leftHand, skeleton.points.rightHand);
   return (
     <g transform={`translate(${hand.x} ${hand.y})`}>
-      <path d="M-13-15h26v25c0 10-26 10-26 0Z" fill="#fbf8f2" stroke="#20211f" strokeWidth="3" />
-      <path d="M13-8c16-2 16 20 0 18" fill="none" stroke="#20211f" strokeWidth="3" />
+      <path d="M-13-15h26v25c0 10-26 10-26 0Z" fill="#fbfeff" stroke="#06343d" strokeWidth="3" />
+      <path d="M13-8c16-2 16 20 0 18" fill="none" stroke="#06343d" strokeWidth="3" />
       <path d="M-6-21q5-9 0-17M5-21q5-9 0-17" fill="none" stroke="#7f8b82" strokeWidth="2" strokeLinecap="round" />
     </g>
   );
@@ -767,7 +767,7 @@ function Cup({ skeleton }: { skeleton: ProjectedSkeleton }) {
 function MotionMarks({ skeleton, marker, compact }: { skeleton: ProjectedSkeleton; marker: string; compact: boolean }) {
   const hip = midpoint(skeleton.points.leftHip, skeleton.points.rightHip);
   return (
-    <g fill="none" stroke="#20211f" strokeOpacity={compact ? .22 : .5} strokeWidth={compact ? 4 : 3} strokeDasharray="8 8" markerEnd={`url(#${marker})`}>
+    <g fill="none" stroke="#06343d" strokeOpacity={compact ? .22 : .5} strokeWidth={compact ? 4 : 3} strokeDasharray="8 8" markerEnd={`url(#${marker})`}>
       <path d={`M ${hip.x - 88} ${hip.y + 18} Q ${hip.x - 48} ${hip.y - 12} ${hip.x - 12} ${hip.y + 8}`} />
       {!compact && <path d={`M ${skeleton.points.leftFoot.x - 40} ${skeleton.points.leftFoot.y - 9} Q ${skeleton.points.leftFoot.x - 18} ${skeleton.points.leftFoot.y - 35} ${skeleton.points.leftFoot.x + 9} ${skeleton.points.leftFoot.y - 12}`} />}
     </g>
@@ -781,15 +781,15 @@ function CameraBlueprint({ pose, skeleton, marker }: { pose: Pose; skeleton: Pro
   const cameraY = guide.height === 'ground' ? 540 : guide.height === 'waist' ? 445 : guide.height === 'chest' ? 350 : guide.height === 'slightly-high' ? 155 : 235;
   return (
     <g>
-      <path d={`M ${cameraX} ${cameraY} L ${target.x} ${target.y}`} stroke="#ff654f" strokeWidth="3" strokeDasharray="10 8" markerEnd={`url(#${marker})`} />
+      <path d={`M ${cameraX} ${cameraY} L ${target.x} ${target.y}`} stroke="#c8ff1a" strokeWidth="3" strokeDasharray="10 8" markerEnd={`url(#${marker})`} />
       <g transform={`translate(${cameraX} ${cameraY})`}>
-        <rect x="-27" y="-18" width="54" height="36" rx="6" fill="#20211f" />
-        <circle r="11" fill="#e9e4da" stroke="#c9ff64" strokeWidth="4" />
-        <path d="M-14 18-30 45M14 18 30 45M0 18v30" stroke="#20211f" strokeWidth="5" strokeLinecap="round" />
+        <rect x="-27" y="-18" width="54" height="36" rx="6" fill="#06343d" />
+        <circle r="11" fill="#e2f0f2" stroke="#c8ff1a" strokeWidth="4" />
+        <path d="M-14 18-30 45M14 18 30 45M0 18v30" stroke="#06343d" strokeWidth="5" strokeLinecap="round" />
       </g>
       <g transform={`translate(${cameraX < 360 ? 24 : 540} ${cameraY + 62})`}>
-        <rect width="156" height="31" rx="15.5" fill="#ff654f" />
-        <text x="78" y="20" textAnchor="middle" fill="#20211f" fontSize="11" fontWeight="900" letterSpacing="1">CAMERA POSITION</text>
+        <rect width="156" height="31" rx="15.5" fill="#c8ff1a" />
+        <text x="78" y="20" textAnchor="middle" fill="#06343d" fontSize="11" fontWeight="900" letterSpacing="1">CAMERA POSITION</text>
       </g>
     </g>
   );
@@ -813,10 +813,10 @@ function Callouts({ skeleton, upperFocus }: { skeleton: ProjectedSkeleton; upper
         const elbowX = item.side === 'left' ? item.target.x - 24 : item.target.x + 24;
         return (
           <g key={item.label}>
-            <path d={`M ${startX} ${item.y + 14} H ${elbowX} L ${item.target.x} ${item.target.y}`} fill="none" stroke="#20211f" strokeOpacity=".52" strokeWidth="2" />
-            <circle cx={item.target.x} cy={item.target.y} r="5" fill="#c9ff64" stroke="#20211f" strokeWidth="2" />
-            <rect x={item.x} y={item.y} width="140" height="29" rx="14.5" fill="#fbf8f2" stroke="#20211f" strokeOpacity=".25" />
-            <text x={item.x + 70} y={item.y + 19} textAnchor="middle" fill="#20211f" fontSize="10.5" fontWeight="900" letterSpacing="1.05">{item.label}</text>
+            <path d={`M ${startX} ${item.y + 14} H ${elbowX} L ${item.target.x} ${item.target.y}`} fill="none" stroke="#06343d" strokeOpacity=".52" strokeWidth="2" />
+            <circle cx={item.target.x} cy={item.target.y} r="5" fill="#c8ff1a" stroke="#06343d" strokeWidth="2" />
+            <rect x={item.x} y={item.y} width="140" height="29" rx="14.5" fill="#fbfeff" stroke="#06343d" strokeOpacity=".25" />
+            <text x={item.x + 70} y={item.y + 19} textAnchor="middle" fill="#06343d" fontSize="10.5" fontWeight="900" letterSpacing="1.05">{item.label}</text>
           </g>
         );
       })}

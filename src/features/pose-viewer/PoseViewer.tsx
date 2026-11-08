@@ -12,9 +12,9 @@ import { PoseGlyph } from './PoseGlyph';
 type Appearance = 'coral' | 'ink' | 'lavender';
 
 const appearanceColors: Record<Appearance, { clothing: string; skin: string }> = {
-  coral: { clothing: '#ff654f', skin: '#c98262' },
-  ink: { clothing: '#383b37', skin: '#8d5b46' },
-  lavender: { clothing: '#7774ad', skin: '#e0ad87' },
+  coral: { clothing: '#0b6574', skin: '#d6e7e9' },
+  ink: { clothing: '#06343d', skin: '#9bb7bc' },
+  lavender: { clothing: '#c8ff1a', skin: '#d6e7e9' },
 };
 
 const cameraPositions = {
@@ -86,8 +86,8 @@ export default function PoseViewer({ pose, showPhotographer = false }: { pose: P
           dpr={[1, 1.6]}
           gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         >
-          <color attach="background" args={['#e9e4da']} />
-          <fog attach="fog" args={['#e9e4da', 6, 11]} />
+          <color attach="background" args={['#e2f0f2']} />
+          <fog attach="fog" args={['#e2f0f2', 6, 11]} />
           <ambientLight intensity={1.55} />
           <directionalLight position={[3, 5, 4]} intensity={2.2} castShadow />
           <directionalLight position={[-4, 2, -3]} intensity={0.8} color="#bdc4ff" />
@@ -174,7 +174,7 @@ function Mannequin({ pose, appearance, guides, phone }: { pose: MannequinPose; a
   });
 
   const joint = (position: [number, number, number]) => guides ? (
-    <mesh position={position}><sphereGeometry args={[.055, 12, 12]} /><meshBasicMaterial color="#c9ff64" depthTest={false} /></mesh>
+    <mesh position={position}><sphereGeometry args={[.055, 12, 12]} /><meshBasicMaterial color="#c8ff1a" depthTest={false} /></mesh>
   ) : null;
 
   return (
@@ -207,10 +207,10 @@ function Arm({ side, jointRef, color, skin, guides, phone }: { side: 'left' | 'r
   const wrist = `${side}Wrist` as JointName;
   return (
     <group ref={jointRef(shoulder)} position={[sign * .45, .86, 0]}>
-      {guides && <mesh><sphereGeometry args={[.055, 12, 12]} /><meshBasicMaterial color="#c9ff64" /></mesh>}
+      {guides && <mesh><sphereGeometry args={[.055, 12, 12]} /><meshBasicMaterial color="#c8ff1a" /></mesh>}
       <mesh castShadow position={[0, -.27, 0]}><capsuleGeometry args={[.1, .34, 6, 12]} /><meshStandardMaterial color={color} roughness={.75} /></mesh>
       <group ref={jointRef(elbow)} position={[0, -.57, 0]}>
-        {guides && <mesh><sphereGeometry args={[.05, 12, 12]} /><meshBasicMaterial color="#c9ff64" /></mesh>}
+        {guides && <mesh><sphereGeometry args={[.05, 12, 12]} /><meshBasicMaterial color="#c8ff1a" /></mesh>}
         <mesh castShadow position={[0, -.24, 0]}><capsuleGeometry args={[.082, .31, 6, 12]} /><meshStandardMaterial color={skin} roughness={.8} /></mesh>
         <group ref={jointRef(wrist)} position={[0, -.51, 0]}>
           <mesh castShadow position={[0, -.07, 0]}><sphereGeometry args={[.1, 16, 12]} /><meshStandardMaterial color={skin} roughness={.8} /></mesh>
@@ -228,10 +228,10 @@ function Leg({ side, jointRef, color, guides }: { side: 'left' | 'right'; jointR
   const ankle = `${side}Ankle` as JointName;
   return (
     <group ref={jointRef(hip)} position={[sign * .18, .14, 0]}>
-      {guides && <mesh><sphereGeometry args={[.055, 12, 12]} /><meshBasicMaterial color="#c9ff64" /></mesh>}
+      {guides && <mesh><sphereGeometry args={[.055, 12, 12]} /><meshBasicMaterial color="#c8ff1a" /></mesh>}
       <mesh castShadow position={[0, -.39, 0]}><capsuleGeometry args={[.14, .52, 7, 14]} /><meshStandardMaterial color={color} roughness={.78} /></mesh>
       <group ref={jointRef(knee)} position={[0, -.79, 0]}>
-        {guides && <mesh><sphereGeometry args={[.05, 12, 12]} /><meshBasicMaterial color="#c9ff64" /></mesh>}
+        {guides && <mesh><sphereGeometry args={[.05, 12, 12]} /><meshBasicMaterial color="#c8ff1a" /></mesh>}
         <mesh castShadow position={[0, -.36, 0]}><capsuleGeometry args={[.115, .48, 7, 14]} /><meshStandardMaterial color={color} roughness={.78} /></mesh>
         <group ref={jointRef(ankle)} position={[0, -.72, 0]}>
           <RoundedBox args={[.25, .16, .46]} radius={.06} smoothness={3} castShadow position={[0, -.04, .1]}>
@@ -253,7 +253,7 @@ function PhotographerGuide({ guide }: { guide: CameraGuide }) {
       <mesh position={[0, .75, 0]}><capsuleGeometry args={[.16, .6, 8, 16]} /><meshStandardMaterial color="#66706d" transparent opacity={.72} /></mesh>
       <mesh position={[0, 1.2, 0]}><sphereGeometry args={[.2, 18, 14]} /><meshStandardMaterial color="#66706d" transparent opacity={.72} /></mesh>
       <mesh position={[0, 1.03, -.22]} rotation={[0, 0, 0]}><boxGeometry args={[.34, .22, .2]} /><meshStandardMaterial color="#1f211f" /></mesh>
-      <Line points={[[0, 1.03, -.3], [-x, .7 - y, -z]]} color="#ff5c45" dashed dashScale={5} lineWidth={1.5} />
+      <Line points={[[0, 1.03, -.3], [-x, .7 - y, -z]]} color="#c8ff1a" dashed dashScale={5} lineWidth={1.5} />
     </group>
   );
 }

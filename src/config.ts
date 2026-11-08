@@ -1,8 +1,8 @@
 export const BRAND = {
   name: 'PosePilot',
   strapline: 'Find your frame.',
-  accent: '#ff5c45',
-  lime: '#c9ff64',
+  accent: '#0b5663',
+  lime: '#c8ff1a',
 } as const;
 
 export const STORAGE_KEYS = {
