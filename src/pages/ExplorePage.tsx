@@ -25,6 +25,7 @@ export function ExplorePage() {
   const [showFilters, setShowFilters] = useState(false);
   const romanticTheme = filters.collection === 'romantic';
   const masculineTheme = filters.collection === 'masculine';
+  const feminineTheme = filters.collection === 'feminine';
   useCollectionTheme(filters.collection);
   const activeFilters = Object.values(filters).filter(Boolean).length;
   const results = useMemo(() => {
@@ -41,16 +42,19 @@ export function ExplorePage() {
   return (
     <div className="page section-wrap explore-page">
       <PageIntro
-        eyebrow={romanticTheme ? 'The romantic collection' : masculineTheme ? 'Masculine studies · Archive 02' : 'Pose library'}
-        title={romanticTheme ? 'Love, held in the frame.' : masculineTheme ? 'Built from shadow.' : 'A useful idea for every kind of frame.'}
+        eyebrow={romanticTheme ? 'The romantic collection' : masculineTheme ? 'Masculine studies · Archive 02' : feminineTheme ? 'Feminine forms · Volume 03' : 'Pose library'}
+        title={romanticTheme ? 'Love, held in the frame.' : masculineTheme ? 'Built from shadow.' : feminineTheme ? 'Poise, in full bloom.' : 'A useful idea for every kind of frame.'}
         copy={romanticTheme
           ? 'Twenty warm, connected studies for couples—quiet touches, shared lines and cinematic closeness, each translated into a clear articulated pose guide.'
           : masculineTheme
             ? 'Twenty full-body studies shaped by weight, tension and negative space—direct, cinematic poses with strong structure and a deliberate point of view.'
+            : feminineTheme
+              ? 'Forty full-body studies of balance, curve and quiet confidence—expressive silhouettes guided by soft strength, botanical colour and considered movement.'
           : `${poseStats.total} original pose guides organized into Essentials, Editorial, Romantic, Masculine full-body, Feminine full-body and Low-angle portrait collections. Every guide is available offline after the first visit.`}
       />
       {romanticTheme && <div className="romantic-flourish" aria-hidden="true"><span>Amore in every gesture</span></div>}
       {masculineTheme && <div className="masculine-masthead" aria-hidden="true"><span>FORM / 20 STUDIES</span><span>WEIGHT · TENSION · PRESENCE</span><span>ISSUE 02 / 2026</span></div>}
+      {feminineTheme && <div className="feminine-botanical" aria-hidden="true"><span>Soft form</span><i /><span>Botanical line</span><i /><span>Quiet strength</span></div>}
       <nav className="collection-tabs" aria-label="Pose collections">
         {collections.map((collection) => <button key={collection.value || 'all'} className={filters.collection === collection.value ? 'active' : ''} onClick={() => setFilter('collection', collection.value)}><span>{collection.label}</span><strong>{collection.count}</strong></button>)}
       </nav>

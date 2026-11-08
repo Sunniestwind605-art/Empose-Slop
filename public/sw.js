@@ -1,4 +1,4 @@
-const CACHE_NAME = 'posepilot-masculine-theme-v1';
+const CACHE_NAME = 'posepilot-feminine-theme-v1';
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const withBase = (path = '') => new URL(`${BASE_PATH}${path}`, self.location.origin).href;
 

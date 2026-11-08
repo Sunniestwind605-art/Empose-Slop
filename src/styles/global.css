@@ -635,6 +635,154 @@ body.masculine-mode {
   .masculine-masthead span:last-child { text-align: right; }
 }
 
+/* Feminine collection — muted botanical editorial */
+body.feminine-mode {
+  --ink: #313524;
+  --petrol: #313524;
+  --petrol-bright: #465039;
+  --muted: #706b5c;
+  --ivory: #eee4d1;
+  --paper: #f5ecdc;
+  --coral: #c97f68;
+  --lime: #839069;
+  --lavender: #d6a08d;
+  --line: rgba(49, 53, 36, .28);
+  --soft-line: rgba(49, 53, 36, .13);
+  --shadow: 0 25px 65px rgba(40, 45, 29, .2);
+  --display: "Cormorant Garamond Variable", Georgia, serif;
+  color: var(--ink);
+  background-color: #eee4d1;
+  background-image:
+    radial-gradient(circle at 88% 8%, rgba(201, 127, 104, .18), transparent 24%),
+    linear-gradient(112deg, rgba(131, 144, 105, .09) 0 1px, transparent 1px 100%);
+  background-size: auto, 46px 46px;
+}
+
+.feminine-mode .site-header {
+  background: rgba(47, 53, 35, .96);
+  border-bottom-color: rgba(245, 236, 220, .18);
+  box-shadow: 0 10px 34px rgba(39, 43, 29, .25);
+}
+.feminine-mode .nav-link { color: #d9d3c3; }
+.feminine-mode .nav-link:hover,
+.feminine-mode .nav-link.active { background: #d39782; color: #2f3523; box-shadow: none; }
+.feminine-mode .session-link,
+.feminine-mode .favourite-link { border-color: rgba(245, 236, 220, .28); color: #f5ecdc; }
+.feminine-mode .session-link span,
+.feminine-mode .favourite-link span { background: #d39782; color: #2f3523; }
+.feminine-mode .brand-mark svg rect { fill: #f3e9d7; }
+.feminine-mode .brand-mark svg circle { fill: #d39782; }
+.feminine-mode .brand-mark svg path { fill: #313524; }
+.feminine-mode .brand-mark > span { color: #f3e9d7; font-family: "Cormorant Garamond Variable", Georgia, serif; font-size: 1.2rem; font-weight: 650; letter-spacing: -.03em; }
+.feminine-mode .site-footer { color: #313524; border-top-color: rgba(49, 53, 36, .26); }
+.feminine-mode .mobile-bottom-nav { background: rgba(47, 53, 35, .97); border-top-color: rgba(245, 236, 220, .18); }
+
+.feminine-mode .page-intro { position: relative; min-height: 370px; padding: 54px 7% 48px; border: 0; background: #313524; color: #f3e9d7; overflow: hidden; }
+.feminine-mode .page-intro::before,
+.feminine-mode .page-intro::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+.feminine-mode .page-intro::before {
+  width: clamp(190px, 28vw, 380px);
+  aspect-ratio: 1;
+  right: -4%;
+  top: -21%;
+  border: 1px solid rgba(211, 151, 130, .55);
+  border-radius: 55% 45% 62% 38%;
+  box-shadow: -55px 90px 0 -54px rgba(131, 144, 105, .85), -105px 150px 0 -104px rgba(211, 151, 130, .8);
+  transform: rotate(24deg);
+}
+.feminine-mode .page-intro::after {
+  left: 50%;
+  bottom: 0;
+  width: 1px;
+  height: 64%;
+  background: linear-gradient(#839069, rgba(131, 144, 105, 0));
+  transform: rotate(33deg);
+  transform-origin: bottom;
+}
+.feminine-mode .page-intro > div { position: relative; z-index: 1; }
+.feminine-mode .page-intro h1,
+.feminine-mode .detail-header h1 {
+  font-family: "Cormorant Garamond Variable", Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -.055em;
+  line-height: .88;
+}
+.feminine-mode .page-intro h1 { max-width: 720px; margin-top: 28px; font-size: clamp(4.7rem, 8vw, 8rem); }
+.feminine-mode .page-intro p { max-width: 650px; color: #d5cdbb; }
+.feminine-mode .kicker { color: #d39782; letter-spacing: .22em; }
+.feminine-botanical { display: grid; grid-template-columns: auto 1fr auto 1fr auto; align-items: center; gap: 18px; margin: -1px 0 44px; padding: 14px 22px; border: 1px solid rgba(49, 53, 36, .22); border-top: 0; color: #596044; font-family: "Cormorant Garamond Variable", Georgia, serif; font-size: 1.12rem; font-style: italic; }
+.feminine-botanical i { height: 1px; background: linear-gradient(90deg, rgba(131, 144, 105, .25), #839069, rgba(211, 151, 130, .42)); }
+
+.feminine-mode .collection-tabs button,
+.feminine-mode .search-box,
+.feminine-mode select,
+.feminine-mode .filter-panel { background: rgba(245, 236, 220, .86); color: #313524; }
+.feminine-mode .collection-tabs button { border-radius: 0; border-color: rgba(49, 53, 36, .26); }
+.feminine-mode .collection-tabs button:hover { border-color: #839069; background: #eee2cf; }
+.feminine-mode .collection-tabs button.active { border-color: #313524; background: #313524; color: #f3e9d7; }
+.feminine-mode .collection-tabs strong { background: #e2d4c1; color: #566043; }
+.feminine-mode .collection-tabs button.active strong { background: #d39782; color: #313524; }
+.feminine-mode .search-box { border-radius: 0; }
+.feminine-mode .filter-button span { background: #d39782; color: #313524; }
+.feminine-mode .active-filter-row button { background: rgba(131, 144, 105, .16); color: #4d553d; }
+
+.feminine-mode .pose-card {
+  border-color: rgba(49, 53, 36, .24);
+  border-radius: 2px;
+  background: rgba(247, 239, 225, .94);
+  box-shadow: 0 16px 44px rgba(46, 50, 35, .1);
+}
+.feminine-mode .pose-card:nth-child(3n + 2) { background: #e2d7c1; }
+.feminine-mode .pose-card:hover { border-color: #839069; box-shadow: 0 22px 55px rgba(46, 50, 35, .2); transform: translateY(-4px); }
+.feminine-mode .pose-card-visual { background: #d8d2bd; border-bottom: 1px solid rgba(49, 53, 36, .2); }
+.feminine-mode .pose-card-visual .pose-glyph { filter: saturate(.72) sepia(.08) contrast(.96); }
+.feminine-mode .pose-card-body { padding: 20px; }
+.feminine-mode .pose-card h3 { font-family: "Cormorant Garamond Variable", Georgia, serif; font-size: 2.15rem; font-weight: 560; letter-spacing: -.04em; line-height: .95; }
+.feminine-mode .pose-card h3 a:hover,
+.feminine-mode .pose-card-actions .text-action { color: #a85f50; }
+.feminine-mode .pose-card-body > p { color: #696555; }
+.feminine-mode .eyebrow-row span,
+.feminine-mode .tag-row span { border-radius: 1px; border-color: rgba(49, 53, 36, .2); color: #596044; }
+.feminine-mode .eyebrow-row .collection-badge.feminine { background: #839069; color: #f7efdf; }
+.feminine-mode .eyebrow-row span:last-child { background: rgba(211, 151, 130, .24); color: #754c40; }
+.feminine-mode .pose-card-actions { border-top-color: rgba(49, 53, 36, .16); }
+.feminine-mode .icon-button { border-radius: 50%; background: #f5ecdc; }
+.feminine-mode .icon-button:hover,
+.feminine-mode .icon-button.active,
+.feminine-mode .heart-button.active { border-color: #d39782; background: #d39782; color: #313524; }
+
+.feminine-mode .detail-header { border-bottom: 1px solid rgba(49, 53, 36, .3); padding-bottom: 36px; }
+.feminine-mode .detail-header h1 { max-width: 900px; font-size: clamp(4.6rem, 8vw, 8rem); color: #313524; }
+.feminine-mode .detail-viewer { border-radius: 2px; border-color: rgba(49, 53, 36, .28); background: #d8d2bd; }
+.feminine-mode .detail-viewer img { filter: saturate(.74) sepia(.08) contrast(.98); }
+.feminine-mode .detail-instructions { border-radius: 2px; border-color: rgba(49, 53, 36, .28); background: rgba(247, 239, 225, .92); }
+.feminine-mode .instruction-heading,
+.feminine-mode .detail-instructions li,
+.feminine-mode .pose-card-actions { border-color: rgba(49, 53, 36, .17); }
+.feminine-mode .coaching-grid article { border: 1px solid rgba(49, 53, 36, .18); border-radius: 2px; background: rgba(235, 225, 207, .88); }
+.feminine-mode .director-note { border-left-color: #d39782; background: #313524; color: #f4ead8; }
+.feminine-mode .director-note p { color: #d3cbb9; }
+.feminine-mode .director-note strong,
+.feminine-mode .section-heading h2 { font-family: "Cormorant Garamond Variable", Georgia, serif; }
+.feminine-mode .camera-spec,
+.feminine-mode .button.primary,
+.feminine-mode .detail-actions .active { border-color: #313524; background: #313524; color: #f4ead8; }
+.feminine-mode .button.secondary { border-color: rgba(49, 53, 36, .28); background: #f5ecdc; }
+.feminine-mode .photographer-toggle.active { border-color: #839069; background: #839069; color: #f5ecdc; }
+
+@media (max-width: 760px) {
+  .feminine-mode .page-intro { min-height: 410px; padding: 40px 24px; }
+  .feminine-mode .page-intro h1 { font-size: clamp(4rem, 18vw, 6.2rem); }
+  .feminine-mode .page-intro::before { right: -23%; top: -8%; }
+  .feminine-botanical { grid-template-columns: auto 1fr auto; gap: 10px; padding-inline: 14px; font-size: .96rem; }
+  .feminine-botanical i:nth-of-type(2),
+  .feminine-botanical span:last-child { display: none; }
+}
+
 @media (max-width: 1100px) {
   .section-wrap { width: min(100% - 40px, 1000px); }
   .desktop-nav { display: none; }

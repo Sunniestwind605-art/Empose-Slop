@@ -5,6 +5,7 @@ export function useCollectionTheme(collection?: string) {
     const themes = {
       'romantic-mode': collection === 'romantic',
       'masculine-mode': collection === 'masculine',
+      'feminine-mode': collection === 'feminine',
     };
 
     Object.entries(themes).forEach(([className, active]) => document.body.classList.toggle(className, active));
