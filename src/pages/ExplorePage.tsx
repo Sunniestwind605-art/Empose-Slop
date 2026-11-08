@@ -5,6 +5,7 @@ import { PoseCard } from '../components/PoseCard';
 import { framingOptions, modeOptions, moodOptions, movementOptions, subjectOptions } from '../data/options';
 import { poseStats, poses } from '../data/poses';
 import { filterPoses, type LibraryFilters } from '../features/recommendations/engine';
+import { useCollectionTheme } from '../hooks/useCollectionTheme';
 
 const emptyFilters: LibraryFilters = { collection: '', subject: '', mood: '', movement: '', framing: '', mode: '', difficulty: '' };
 const collections = [
@@ -22,6 +23,8 @@ export function ExplorePage() {
   const [filters, setFilters] = useState<LibraryFilters>(emptyFilters);
   const [sort, setSort] = useState<'curated' | 'title' | 'simple'>('curated');
   const [showFilters, setShowFilters] = useState(false);
+  const romanticTheme = filters.collection === 'romantic';
+  useCollectionTheme(filters.collection);
   const activeFilters = Object.values(filters).filter(Boolean).length;
   const results = useMemo(() => {
     const filtered = filterPoses(poses, search, filters);
@@ -36,7 +39,14 @@ export function ExplorePage() {
 
   return (
     <div className="page section-wrap explore-page">
-      <PageIntro eyebrow="Pose library" title="A useful idea for every kind of frame." copy={`${poseStats.total} original pose guides organized into Essentials, Editorial, Romantic, Masculine full-body, Feminine full-body and Low-angle portrait collections. Every guide is available offline after the first visit.`} />
+      <PageIntro
+        eyebrow={romanticTheme ? 'The romantic collection' : 'Pose library'}
+        title={romanticTheme ? 'Love, held in the frame.' : 'A useful idea for every kind of frame.'}
+        copy={romanticTheme
+          ? 'Twenty warm, connected studies for couples—quiet touches, shared lines and cinematic closeness, each translated into a clear articulated pose guide.'
+          : `${poseStats.total} original pose guides organized into Essentials, Editorial, Romantic, Masculine full-body, Feminine full-body and Low-angle portrait collections. Every guide is available offline after the first visit.`}
+      />
+      {romanticTheme && <div className="romantic-flourish" aria-hidden="true"><span>Amore in every gesture</span></div>}
       <nav className="collection-tabs" aria-label="Pose collections">
         {collections.map((collection) => <button key={collection.value || 'all'} className={filters.collection === collection.value ? 'active' : ''} onClick={() => setFilter('collection', collection.value)}><span>{collection.label}</span><strong>{collection.count}</strong></button>)}
       </nav>

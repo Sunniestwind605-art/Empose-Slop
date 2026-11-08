@@ -8,10 +8,16 @@ importers:
 
   .:
     dependencies:
+      '@fontsource-variable/cormorant-garamond':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@fontsource-variable/space-grotesk':
         specifier: ^5.3.0
         version: 5.3.0
       '@fontsource-variable/syne':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/allura':
         specifier: ^5.3.0
         version: 5.3.0
       '@react-three/drei':
@@ -306,11 +312,17 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@fontsource-variable/cormorant-garamond@5.3.0':
+    resolution: {integrity: sha512-rgZJ/5w3hi60swAPnrOXpZf5wEH6NTrvm4H8D9Y4b1QIFUqlX14eM3QTMU/eAznjfh0eXpO1QUqsFhiy58aoMg==}
+
   '@fontsource-variable/space-grotesk@5.3.0':
     resolution: {integrity: sha512-2IxmvfB08i9vnGB3Ym/AXvhRE+8XOjWMXIyDum03c+tPwH0FUoMNQfGpU8NXPxjbws0Vvss3AH0Zqt4oJBBAdw==}
 
   '@fontsource-variable/syne@5.3.0':
     resolution: {integrity: sha512-GUNH65fUfWHQcX7bO0BGgScE465gawpTId45aDfhHcVj/upbb6b+2d++5keKP128vK8+LtE4dvLkKTsxoh7TwA==}
+
+  '@fontsource/allura@5.3.0':
+    resolution: {integrity: sha512-UqloNNVxl03+psvtIXCYuo7/v2mD9XmX2HGiczhK6NmDDwbFJJDjrbHZ5tpNuVXKsMEQPc46tZu3hewYN82/YA==}
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -1327,9 +1339,13 @@ snapshots:
   '@esbuild/win32-x64@0.28.2':
     optional: true
 
+  '@fontsource-variable/cormorant-garamond@5.3.0': {}
+
   '@fontsource-variable/space-grotesk@5.3.0': {}
 
   '@fontsource-variable/syne@5.3.0': {}
+
+  '@fontsource/allura@5.3.0': {}
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:

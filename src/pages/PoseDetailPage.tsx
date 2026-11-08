@@ -5,11 +5,13 @@ import { useApp } from '../AppContext';
 import { PoseCard } from '../components/PoseCard';
 import { poseById, poses } from '../data/poses';
 import PoseViewer from '../features/pose-viewer/PoseViewer';
+import { useCollectionTheme } from '../hooks/useCollectionTheme';
 
 export function PoseDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const pose = poseById(id);
+  useCollectionTheme(pose?.collection);
   const [showPhotographer, setShowPhotographer] = useState(false);
   const { favourites, toggleFavourite, session, addToSession } = useApp();
   const similar = useMemo(() => pose ? poses.filter((item) => item.id !== pose.id && (item.category === pose.category || item.moods.some((mood) => pose.moods.includes(mood)))).slice(0, 3) : [], [pose]);
